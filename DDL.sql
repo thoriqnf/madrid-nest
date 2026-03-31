@@ -1,577 +1,618 @@
--- ========================
--- DROP & RECREATE TABLES
--- ========================
+# SQL Notes — Complete Reference
 
+---
+
+## Part 1: DDL — Table Structure
+
+### 1. Creating a Table
+
+```sql
+CREATE TABLE <table_name> (
+    <column1> <datatype> PRIMARY KEY,
+    <column2> <datatype> REFERENCES <parent_table>(<parent_column>),
+    <column3> <datatype>
+);
+```
+
+- `PRIMARY KEY` — inline, keeps things tidy
+- `REFERENCES` — enforces relationships (foreign key)
+
+**Example:**
+
+```sql
+CREATE TABLE customers (
+    customer_id SERIAL PRIMARY KEY,
+    region_id   INT REFERENCES regions(region_id),
+    customer_name VARCHAR(100)
+);
+```
+
+- `customer_id SERIAL PRIMARY KEY` — auto-increment
+- `region_id INT REFERENCES regions(region_id)` — enforces the customer belongs to a valid region
+
+---
+
+### 2. Updating a Table Name
+
+```sql
+ALTER TABLE <table_name> RENAME TO <new_table_name>;
+```
+
+**Example:**
+
+```sql
+ALTER TABLE customers RENAME TO loyal_customers;
+```
+
+---
+
+### 3. Deleting a Table
+
+```sql
+DROP TABLE IF EXISTS <table_name> CASCADE;
+```
+
+- `IF EXISTS` — prevents errors if the table is already gone
+- `CASCADE` — also removes dependent objects (foreign keys, views, etc.)
+
+**Example:**
+
+```sql
+DROP TABLE IF EXISTS loyal_customers CASCADE;
+```
+
+> **Pro tip:** Always double-check before `DROP TABLE CASCADE` — it nukes dependent objects too.
+
+---
+
+### 4. Add a New Column
+
+```sql
+ALTER TABLE <table_name>
+ADD COLUMN <column> <datatype>;
+```
+
+**Example:**
+
+```sql
+ALTER TABLE customers
+ADD COLUMN loyalty_points INT;
+```
+
+---
+
+### 5. Update Column Type
+
+```sql
+ALTER TABLE <table_name>
+ALTER COLUMN <column> TYPE <datatype>;
+```
+
+**Example:**
+
+```sql
+ALTER TABLE outlets
+ALTER COLUMN phone_number TYPE VARCHAR(30);
+```
+
+> **Bonus tip:** Some datatype changes may require an extra `USING` clause.
+
+---
+
+### 6. Drop a Column
+
+```sql
+ALTER TABLE <table_name>
+DROP COLUMN <column>;
+```
+
+**Example:**
+
+```sql
+ALTER TABLE customers
+DROP COLUMN loyalty_points;
+```
+
+---
+
+## Part 2: Full Exercise Schema & Seed Data
+
+### Create Tables
+
+```sql
 DROP TABLE IF EXISTS TRANSACTION_DETAILS;
-
 DROP TABLE IF EXISTS TRANSACTIONS;
-
 DROP TABLE IF EXISTS SERVICES;
-
 DROP TABLE IF EXISTS CUSTOMERS;
-
 DROP TABLE IF EXISTS OUTLETS;
 
--- Use INT with explicit IDs instead of SERIAL
 CREATE TABLE OUTLETS (
-    Outlet_ID INT PRIMARY KEY,
-    Outlet_Name VARCHAR(100),
-    Address VARCHAR(200),
-    Phone_Number VARCHAR(20)
+    Outlet_ID     INT PRIMARY KEY,
+    Outlet_Name   VARCHAR(100),
+    Address       VARCHAR(200),
+    Phone_Number  VARCHAR(20)
 );
 
 CREATE TABLE CUSTOMERS (
-    Customer_ID INT PRIMARY KEY,
-    Full_Name VARCHAR(100),
-    Phone_Number VARCHAR(20),
-    Email VARCHAR(100)
+    Customer_ID   INT PRIMARY KEY,
+    Full_Name     VARCHAR(100),
+    Phone_Number  VARCHAR(20),
+    Email         VARCHAR(100)
 );
 
 CREATE TABLE SERVICES (
-    Service_ID INT PRIMARY KEY,
-    Service_Name VARCHAR(100),
-    Base_Price DECIMAL(10, 2)
+    Service_ID    INT PRIMARY KEY,
+    Service_Name  VARCHAR(100),
+    Base_Price    DECIMAL(10,2)
 );
 
 CREATE TABLE TRANSACTIONS (
     Transaction_ID INT PRIMARY KEY,
-    Date DATE,
-    Customer_ID INT REFERENCES CUSTOMERS (Customer_ID),
-    Outlet_ID INT REFERENCES OUTLETS (Outlet_ID)
+    Date           DATE,
+    Customer_ID    INT REFERENCES CUSTOMERS(Customer_ID),
+    Outlet_ID      INT REFERENCES OUTLETS(Outlet_ID)
 );
 
 CREATE TABLE TRANSACTION_DETAILS (
-    Detail_ID INT PRIMARY KEY,
-    Transaction_ID INT REFERENCES TRANSACTIONS (Transaction_ID),
-    Service_ID INT REFERENCES SERVICES (Service_ID),
-    Subtotal DECIMAL(10, 2)
+    Detail_ID      INT PRIMARY KEY,
+    Transaction_ID INT REFERENCES TRANSACTIONS(Transaction_ID),
+    Service_ID     INT REFERENCES SERVICES(Service_ID),
+    Subtotal       DECIMAL(10,2)
 );
+```
 
--- ========================
--- INSERT OUTLETS
--- ========================
+---
 
-INSERT INTO
-    OUTLETS
-VALUES (
-        1,
-        'Downtown Branch',
-        '123 Main St, Singapore 010101',
-        '+65 6111 0001'
-    ),
-    (
-        2,
-        'Orchard Branch',
-        '456 Orchard Rd, Singapore 020202',
-        '+65 6111 0002'
-    ),
-    (
-        3,
-        'Bugis Branch',
-        '789 Bugis St, Singapore 030303',
-        '+65 6111 0003'
-    ),
-    (
-        4,
-        'Tampines Branch',
-        '321 Tampines Ave, Singapore 040404',
-        '+65 6111 0004'
-    ),
-    (
-        5,
-        'Jurong Branch',
-        '654 Jurong Rd, Singapore 050505',
-        '+65 6111 0005'
-    ),
-    (
-        6,
-        'Woodlands Branch',
-        '987 Woodlands Dr, Singapore 060606',
-        '+65 6111 0006'
-    ),
-    (
-        7,
-        'Bedok Branch',
-        '111 Bedok Rd, Singapore 070707',
-        '+65 6111 0007'
-    ),
-    (
-        8,
-        'Clementi Branch',
-        '222 Clementi Ave, Singapore 080808',
-        '+65 6111 0008'
-    ),
-    (
-        9,
-        'Ang Mo Kio Branch',
-        '333 AMK Ave, Singapore 090909',
-        '+65 6111 0009'
-    ),
-    (
-        10,
-        'Bishan Branch',
-        '444 Bishan St, Singapore 101010',
-        '+65 6111 0010'
-    );
+### Insert Data
 
--- ========================
--- INSERT CUSTOMERS
--- ========================
+```sql
+-- OUTLETS (10)
+INSERT INTO OUTLETS VALUES
+(1,  'Downtown Branch',   '123 Main St, Singapore 010101',     '+65 6111 0001'),
+(2,  'Orchard Branch',    '456 Orchard Rd, Singapore 020202',  '+65 6111 0002'),
+(3,  'Bugis Branch',      '789 Bugis St, Singapore 030303',    '+65 6111 0003'),
+(4,  'Tampines Branch',   '321 Tampines Ave, Singapore 040404','+65 6111 0004'),
+(5,  'Jurong Branch',     '654 Jurong Rd, Singapore 050505',   '+65 6111 0005'),
+(6,  'Woodlands Branch',  '987 Woodlands Dr, Singapore 060606','+65 6111 0006'),
+(7,  'Bedok Branch',      '111 Bedok Rd, Singapore 070707',    '+65 6111 0007'),
+(8,  'Clementi Branch',   '222 Clementi Ave, Singapore 080808','+65 6111 0008'),
+(9,  'Ang Mo Kio Branch', '333 AMK Ave, Singapore 090909',     '+65 6111 0009'),
+(10, 'Bishan Branch',     '444 Bishan St, Singapore 101010',   '+65 6111 0010');
 
-INSERT INTO
-    CUSTOMERS
-VALUES (
-        1,
-        'Alice Tan',
-        '+65 9001 0001',
-        'alice@email.com'
-    ),
-    (
-        2,
-        'Bob Lim',
-        '+65 9001 0002',
-        'bob@email.com'
-    ),
-    (
-        3,
-        'Carol Ng',
-        '+65 9001 0003',
-        'carol@email.com'
-    ),
-    (
-        4,
-        'David Koh',
-        '+65 9001 0004',
-        'david@email.com'
-    ),
-    (
-        5,
-        'Eva Wong',
-        '+65 9001 0005',
-        'eva@email.com'
-    ),
-    (
-        6,
-        'Frank Lee',
-        '+65 9001 0006',
-        'frank@email.com'
-    ),
-    (
-        7,
-        'Grace Chua',
-        '+65 9001 0007',
-        'grace@email.com'
-    ),
-    (
-        8,
-        'Henry Ong',
-        '+65 9001 0008',
-        'henry@email.com'
-    ),
-    (
-        9,
-        'Iris Chan',
-        '+65 9001 0009',
-        'iris@email.com'
-    ),
-    (
-        10,
-        'Jack Teo',
-        '+65 9001 0010',
-        'jack@email.com'
-    ),
-    (
-        11,
-        'Karen Yeo',
-        '+65 9001 0011',
-        'karen@email.com'
-    ),
-    (
-        12,
-        'Leo Sim',
-        '+65 9001 0012',
-        'leo@email.com'
-    ),
-    (
-        13,
-        'Mia Goh',
-        '+65 9001 0013',
-        'mia@email.com'
-    ),
-    (
-        14,
-        'Nick Ho',
-        '+65 9001 0014',
-        'nick@email.com'
-    ),
-    (
-        15,
-        'Olivia Tan',
-        '+65 9001 0015',
-        'olivia@email.com'
-    ),
-    (
-        16,
-        'Peter Lim',
-        '+65 9001 0016',
-        'peter@email.com'
-    ),
-    (
-        17,
-        'Quinn Ng',
-        '+65 9001 0017',
-        'quinn@email.com'
-    ),
-    (
-        18,
-        'Rachel Koh',
-        '+65 9001 0018',
-        'rachel@email.com'
-    ),
-    (
-        19,
-        'Sam Wong',
-        '+65 9001 0019',
-        'sam@email.com'
-    ),
-    (
-        20,
-        'Tina Lee',
-        '+65 9001 0020',
-        'tina@email.com'
-    ),
-    (
-        21,
-        'Uma Chua',
-        '+65 9001 0021',
-        'uma@email.com'
-    ),
-    (
-        22,
-        'Victor Ong',
-        '+65 9001 0022',
-        'victor@email.com'
-    ),
-    (
-        23,
-        'Wendy Chan',
-        '+65 9001 0023',
-        'wendy@email.com'
-    ),
-    (
-        24,
-        'Xander Teo',
-        '+65 9001 0024',
-        'xander@email.com'
-    ),
-    (
-        25,
-        'Yara Yeo',
-        '+65 9001 0025',
-        'yara@email.com'
-    ),
-    (
-        26,
-        'Zack Sim',
-        '+65 9001 0026',
-        'zack@email.com'
-    ),
-    (
-        27,
-        'Amy Goh',
-        '+65 9001 0027',
-        'amy@email.com'
-    ),
-    (
-        28,
-        'Brian Ho',
-        '+65 9001 0028',
-        'brian@email.com'
-    ),
-    (
-        29,
-        'Cleo Tan',
-        '+65 9001 0029',
-        'cleo@email.com'
-    ),
-    (
-        30,
-        'Derek Lim',
-        '+65 9001 0030',
-        'derek@email.com'
-    );
+-- CUSTOMERS (30)
+INSERT INTO CUSTOMERS VALUES
+(1,'Alice Tan','+65 9001 0001','alice@email.com'),
+(2,'Bob Lim','+65 9001 0002','bob@email.com'),
+(3,'Carol Ng','+65 9001 0003','carol@email.com'),
+(4,'David Koh','+65 9001 0004','david@email.com'),
+(5,'Eva Wong','+65 9001 0005','eva@email.com'),
+(6,'Frank Lee','+65 9001 0006','frank@email.com'),
+(7,'Grace Chua','+65 9001 0007','grace@email.com'),
+(8,'Henry Ong','+65 9001 0008','henry@email.com'),
+(9,'Iris Chan','+65 9001 0009','iris@email.com'),
+(10,'Jack Teo','+65 9001 0010','jack@email.com'),
+(11,'Karen Yeo','+65 9001 0011','karen@email.com'),
+(12,'Leo Sim','+65 9001 0012','leo@email.com'),
+(13,'Mia Goh','+65 9001 0013','mia@email.com'),
+(14,'Nick Ho','+65 9001 0014','nick@email.com'),
+(15,'Olivia Tan','+65 9001 0015','olivia@email.com'),
+(16,'Peter Lim','+65 9001 0016','peter@email.com'),
+(17,'Quinn Ng','+65 9001 0017','quinn@email.com'),
+(18,'Rachel Koh','+65 9001 0018','rachel@email.com'),
+(19,'Sam Wong','+65 9001 0019','sam@email.com'),
+(20,'Tina Lee','+65 9001 0020','tina@email.com'),
+(21,'Uma Chua','+65 9001 0021','uma@email.com'),
+(22,'Victor Ong','+65 9001 0022','victor@email.com'),
+(23,'Wendy Chan','+65 9001 0023','wendy@email.com'),
+(24,'Xander Teo','+65 9001 0024','xander@email.com'),
+(25,'Yara Yeo','+65 9001 0025','yara@email.com'),
+(26,'Zack Sim','+65 9001 0026','zack@email.com'),
+(27,'Amy Goh','+65 9001 0027','amy@email.com'),
+(28,'Brian Ho','+65 9001 0028','brian@email.com'),
+(29,'Cleo Tan','+65 9001 0029','cleo@email.com'),
+(30,'Derek Lim','+65 9001 0030','derek@email.com');
 
--- ========================
--- INSERT SERVICES
--- ========================
+-- SERVICES (10)
+INSERT INTO SERVICES VALUES
+(1,'Haircut',25.00),
+(2,'Hair Coloring',80.00),
+(3,'Hair Treatment',60.00),
+(4,'Manicure',30.00),
+(5,'Pedicure',35.00),
+(6,'Facial',70.00),
+(7,'Massage - 60min',90.00),
+(8,'Massage - 90min',120.00),
+(9,'Eyebrow Threading',15.00),
+(10,'Makeup Application',100.00);
 
-INSERT INTO
-    SERVICES
-VALUES (1, 'Haircut', 25.00),
-    (2, 'Hair Coloring', 80.00),
-    (3, 'Hair Treatment', 60.00),
-    (4, 'Manicure', 30.00),
-    (5, 'Pedicure', 35.00),
-    (6, 'Facial', 70.00),
-    (7, 'Massage - 60min', 90.00),
-    (8, 'Massage - 90min', 120.00),
-    (9, 'Eyebrow Threading', 15.00),
-    (
-        10,
-        'Makeup Application',
-        100.00
-    );
+-- TRANSACTIONS (100)
+INSERT INTO TRANSACTIONS VALUES
+(1,'2025-01-03',1,1),(2,'2025-01-05',2,2),(3,'2025-01-07',3,3),
+(4,'2025-01-09',4,4),(5,'2025-01-11',5,5),(6,'2025-01-13',6,6),
+(7,'2025-01-15',7,7),(8,'2025-01-17',8,8),(9,'2025-01-19',9,9),
+(10,'2025-01-21',10,10),(11,'2025-01-23',11,1),(12,'2025-01-25',12,2),
+(13,'2025-01-27',13,3),(14,'2025-01-29',14,4),(15,'2025-01-31',15,5),
+(16,'2025-02-02',16,6),(17,'2025-02-04',17,7),(18,'2025-02-06',18,8),
+(19,'2025-02-08',19,9),(20,'2025-02-10',20,10),(21,'2025-02-12',21,1),
+(22,'2025-02-14',22,2),(23,'2025-02-16',23,3),(24,'2025-02-18',24,4),
+(25,'2025-02-20',25,5),(26,'2025-02-22',26,6),(27,'2025-02-24',27,7),
+(28,'2025-02-26',28,8),(29,'2025-02-28',29,9),(30,'2025-03-02',30,10),
+(31,'2025-03-04',1,2),(32,'2025-03-06',2,3),(33,'2025-03-08',3,4),
+(34,'2025-03-10',4,5),(35,'2025-03-12',5,6),(36,'2025-03-14',6,7),
+(37,'2025-03-16',7,8),(38,'2025-03-18',8,9),(39,'2025-03-20',9,10),
+(40,'2025-03-22',10,1),(41,'2025-03-24',11,3),(42,'2025-03-26',12,4),
+(43,'2025-03-28',13,5),(44,'2025-03-30',14,6),(45,'2025-04-01',15,7),
+(46,'2025-04-03',16,8),(47,'2025-04-05',17,9),(48,'2025-04-07',18,10),
+(49,'2025-04-09',19,1),(50,'2025-04-11',20,2),(51,'2025-04-13',21,4),
+(52,'2025-04-15',22,5),(53,'2025-04-17',23,6),(54,'2025-04-19',24,7),
+(55,'2025-04-21',25,8),(56,'2025-04-23',26,9),(57,'2025-04-25',27,10),
+(58,'2025-04-27',28,1),(59,'2025-04-29',29,2),(60,'2025-05-01',30,3),
+(61,'2025-05-03',1,5),(62,'2025-05-05',2,6),(63,'2025-05-07',3,7),
+(64,'2025-05-09',4,8),(65,'2025-05-11',5,9),(66,'2025-05-13',6,10),
+(67,'2025-05-15',7,1),(68,'2025-05-17',8,2),(69,'2025-05-19',9,3),
+(70,'2025-05-21',10,4),(71,'2025-05-23',11,6),(72,'2025-05-25',12,7),
+(73,'2025-05-27',13,8),(74,'2025-05-29',14,9),(75,'2025-05-31',15,10),
+(76,'2025-06-02',16,1),(77,'2025-06-04',17,2),(78,'2025-06-06',18,3),
+(79,'2025-06-08',19,4),(80,'2025-06-10',20,5),(81,'2025-06-12',21,7),
+(82,'2025-06-14',22,8),(83,'2025-06-16',23,9),(84,'2025-06-18',24,10),
+(85,'2025-06-20',25,1),(86,'2025-06-22',26,2),(87,'2025-06-24',27,3),
+(88,'2025-06-26',28,4),(89,'2025-06-28',29,5),(90,'2025-06-30',30,6),
+(91,'2025-07-02',1,8),(92,'2025-07-04',2,9),(93,'2025-07-06',3,10),
+(94,'2025-07-08',4,1),(95,'2025-07-10',5,2),(96,'2025-07-12',6,3),
+(97,'2025-07-14',7,4),(98,'2025-07-16',8,5),(99,'2025-07-18',9,6),
+(100,'2025-07-20',10,7);
 
--- ========================
--- INSERT TRANSACTIONS
--- ========================
+-- TRANSACTION_DETAILS
+INSERT INTO TRANSACTION_DETAILS VALUES
+(1,1,1,25.00),(2,1,4,30.00),(3,2,2,80.00),(4,3,3,60.00),(5,3,6,70.00),
+(6,4,5,35.00),(7,5,7,90.00),(8,5,9,15.00),(9,6,1,25.00),(10,7,8,120.00),
+(11,8,4,30.00),(12,8,5,35.00),(13,9,6,70.00),(14,10,2,80.00),(15,10,3,60.00),
+(16,11,1,25.00),(17,12,9,15.00),(18,12,10,100.00),(19,13,7,90.00),(20,14,4,30.00),
+(21,15,5,35.00),(22,15,6,70.00),(23,16,2,80.00),(24,17,1,25.00),(25,17,3,60.00),
+(26,18,8,120.00),(27,19,9,15.00),(28,20,10,100.00),(29,20,1,25.00),(30,21,6,70.00),
+(31,22,4,30.00),(32,22,5,35.00),(33,23,2,80.00),(34,24,7,90.00),(35,25,3,60.00),
+(36,25,9,15.00),(37,26,1,25.00),(38,27,8,120.00),(39,27,10,100.00),(40,28,5,35.00),
+(41,29,6,70.00),(42,30,2,80.00),(43,30,4,30.00),(44,31,1,25.00),(45,32,9,15.00),
+(46,33,7,90.00),(47,33,3,60.00),(48,34,5,35.00),(49,35,10,100.00),(50,36,2,80.00),
+(51,36,6,70.00),(52,37,1,25.00),(53,38,8,120.00),(54,39,4,30.00),(55,39,9,15.00),
+(56,40,3,60.00),(57,41,5,35.00),(58,41,7,90.00),(59,42,1,25.00),(60,43,6,70.00),
+(61,44,2,80.00),(62,44,10,100.00),(63,45,9,15.00),(64,46,4,30.00),(65,47,8,120.00),
+(66,47,3,60.00),(67,48,1,25.00),(68,49,5,35.00),(69,50,6,70.00),(70,50,7,90.00),
+(71,51,2,80.00),(72,52,9,15.00),(73,52,4,30.00),(74,53,1,25.00),(75,54,10,100.00),
+(76,55,3,60.00),(77,55,8,120.00),(78,56,5,35.00),(79,57,6,70.00),(80,57,2,80.00),
+(81,58,1,25.00),(82,59,9,15.00),(83,60,7,90.00),(84,60,4,30.00),(85,61,3,60.00),
+(86,62,10,100.00),(87,62,5,35.00),(88,63,2,80.00),(89,64,8,120.00),(90,65,1,25.00),
+(91,65,6,70.00),(92,66,9,15.00),(93,67,4,30.00),(94,67,3,60.00),(95,68,7,90.00),
+(96,69,5,35.00),(97,70,2,80.00),(98,70,10,100.00),(99,71,1,25.00),(100,72,6,70.00),
+(101,73,8,120.00),(102,73,9,15.00),(103,74,4,30.00),(104,75,3,60.00),(105,75,5,35.00),
+(106,76,2,80.00),(107,77,7,90.00),(108,77,1,25.00),(109,78,10,100.00),(110,79,6,70.00),
+(111,80,9,15.00),(112,80,4,30.00),(113,81,8,120.00),(114,82,3,60.00),(115,82,2,80.00),
+(116,83,5,35.00),(117,84,1,25.00),(118,85,7,90.00),(119,85,10,100.00),(120,86,6,70.00),
+(121,87,9,15.00),(122,87,4,30.00),(123,88,2,80.00),(124,89,8,120.00),(125,90,5,35.00),
+(126,90,3,60.00),(127,91,1,25.00),(128,92,7,90.00),(129,93,10,100.00),(130,93,6,70.00),
+(131,94,9,15.00),(132,95,4,30.00),(133,95,2,80.00),(134,96,8,120.00),(135,97,5,35.00),
+(136,98,3,60.00),(137,98,1,25.00),(138,99,7,90.00),(139,100,10,100.00),(140,100,6,70.00);
+```
 
-INSERT INTO
-    TRANSACTIONS
-VALUES (1, '2025-01-03', 1, 1),
-    (2, '2025-01-05', 2, 2),
-    (3, '2025-01-07', 3, 3),
-    (4, '2025-01-09', 4, 4),
-    (5, '2025-01-11', 5, 5),
-    (6, '2025-01-13', 6, 6),
-    (7, '2025-01-15', 7, 7),
-    (8, '2025-01-17', 8, 8),
-    (9, '2025-01-19', 9, 9),
-    (10, '2025-01-21', 10, 10),
-    (11, '2025-01-23', 11, 1),
-    (12, '2025-01-25', 12, 2),
-    (13, '2025-01-27', 13, 3),
-    (14, '2025-01-29', 14, 4),
-    (15, '2025-01-31', 15, 5),
-    (16, '2025-02-02', 16, 6),
-    (17, '2025-02-04', 17, 7),
-    (18, '2025-02-06', 18, 8),
-    (19, '2025-02-08', 19, 9),
-    (20, '2025-02-10', 20, 10),
-    (21, '2025-02-12', 21, 1),
-    (22, '2025-02-14', 22, 2),
-    (23, '2025-02-16', 23, 3),
-    (24, '2025-02-18', 24, 4),
-    (25, '2025-02-20', 25, 5),
-    (26, '2025-02-22', 26, 6),
-    (27, '2025-02-24', 27, 7),
-    (28, '2025-02-26', 28, 8),
-    (29, '2025-02-28', 29, 9),
-    (30, '2025-03-02', 30, 10),
-    (31, '2025-03-04', 1, 2),
-    (32, '2025-03-06', 2, 3),
-    (33, '2025-03-08', 3, 4),
-    (34, '2025-03-10', 4, 5),
-    (35, '2025-03-12', 5, 6),
-    (36, '2025-03-14', 6, 7),
-    (37, '2025-03-16', 7, 8),
-    (38, '2025-03-18', 8, 9),
-    (39, '2025-03-20', 9, 10),
-    (40, '2025-03-22', 10, 1),
-    (41, '2025-03-24', 11, 3),
-    (42, '2025-03-26', 12, 4),
-    (43, '2025-03-28', 13, 5),
-    (44, '2025-03-30', 14, 6),
-    (45, '2025-04-01', 15, 7),
-    (46, '2025-04-03', 16, 8),
-    (47, '2025-04-05', 17, 9),
-    (48, '2025-04-07', 18, 10),
-    (49, '2025-04-09', 19, 1),
-    (50, '2025-04-11', 20, 2),
-    (51, '2025-04-13', 21, 4),
-    (52, '2025-04-15', 22, 5),
-    (53, '2025-04-17', 23, 6),
-    (54, '2025-04-19', 24, 7),
-    (55, '2025-04-21', 25, 8),
-    (56, '2025-04-23', 26, 9),
-    (57, '2025-04-25', 27, 10),
-    (58, '2025-04-27', 28, 1),
-    (59, '2025-04-29', 29, 2),
-    (60, '2025-05-01', 30, 3),
-    (61, '2025-05-03', 1, 5),
-    (62, '2025-05-05', 2, 6),
-    (63, '2025-05-07', 3, 7),
-    (64, '2025-05-09', 4, 8),
-    (65, '2025-05-11', 5, 9),
-    (66, '2025-05-13', 6, 10),
-    (67, '2025-05-15', 7, 1),
-    (68, '2025-05-17', 8, 2),
-    (69, '2025-05-19', 9, 3),
-    (70, '2025-05-21', 10, 4),
-    (71, '2025-05-23', 11, 6),
-    (72, '2025-05-25', 12, 7),
-    (73, '2025-05-27', 13, 8),
-    (74, '2025-05-29', 14, 9),
-    (75, '2025-05-31', 15, 10),
-    (76, '2025-06-02', 16, 1),
-    (77, '2025-06-04', 17, 2),
-    (78, '2025-06-06', 18, 3),
-    (79, '2025-06-08', 19, 4),
-    (80, '2025-06-10', 20, 5),
-    (81, '2025-06-12', 21, 7),
-    (82, '2025-06-14', 22, 8),
-    (83, '2025-06-16', 23, 9),
-    (84, '2025-06-18', 24, 10),
-    (85, '2025-06-20', 25, 1),
-    (86, '2025-06-22', 26, 2),
-    (87, '2025-06-24', 27, 3),
-    (88, '2025-06-26', 28, 4),
-    (89, '2025-06-28', 29, 5),
-    (90, '2025-06-30', 30, 6),
-    (91, '2025-07-02', 1, 8),
-    (92, '2025-07-04', 2, 9),
-    (93, '2025-07-06', 3, 10),
-    (94, '2025-07-08', 4, 1),
-    (95, '2025-07-10', 5, 2),
-    (96, '2025-07-12', 6, 3),
-    (97, '2025-07-14', 7, 4),
-    (98, '2025-07-16', 8, 5),
-    (99, '2025-07-18', 9, 6),
-    (100, '2025-07-20', 10, 7);
+---
 
--- ========================
--- INSERT TRANSACTION_DETAILS
--- ========================
+## Part 3: SELECT Query Structure
 
-INSERT INTO
-    TRANSACTION_DETAILS
-VALUES (1, 1, 1, 25.00),
-    (2, 1, 4, 30.00),
-    (3, 2, 2, 80.00),
-    (4, 3, 3, 60.00),
-    (5, 3, 6, 70.00),
-    (6, 4, 5, 35.00),
-    (7, 5, 7, 90.00),
-    (8, 5, 9, 15.00),
-    (9, 6, 1, 25.00),
-    (10, 7, 8, 120.00),
-    (11, 8, 4, 30.00),
-    (12, 8, 5, 35.00),
-    (13, 9, 6, 70.00),
-    (14, 10, 2, 80.00),
-    (15, 10, 3, 60.00),
-    (16, 11, 1, 25.00),
-    (17, 12, 9, 15.00),
-    (18, 12, 10, 100.00),
-    (19, 13, 7, 90.00),
-    (20, 14, 4, 30.00),
-    (21, 15, 5, 35.00),
-    (22, 15, 6, 70.00),
-    (23, 16, 2, 80.00),
-    (24, 17, 1, 25.00),
-    (25, 17, 3, 60.00),
-    (26, 18, 8, 120.00),
-    (27, 19, 9, 15.00),
-    (28, 20, 10, 100.00),
-    (29, 20, 1, 25.00),
-    (30, 21, 6, 70.00),
-    (31, 22, 4, 30.00),
-    (32, 22, 5, 35.00),
-    (33, 23, 2, 80.00),
-    (34, 24, 7, 90.00),
-    (35, 25, 3, 60.00),
-    (36, 25, 9, 15.00),
-    (37, 26, 1, 25.00),
-    (38, 27, 8, 120.00),
-    (39, 27, 10, 100.00),
-    (40, 28, 5, 35.00),
-    (41, 29, 6, 70.00),
-    (42, 30, 2, 80.00),
-    (43, 30, 4, 30.00),
-    (44, 31, 1, 25.00),
-    (45, 32, 9, 15.00),
-    (46, 33, 7, 90.00),
-    (47, 33, 3, 60.00),
-    (48, 34, 5, 35.00),
-    (49, 35, 10, 100.00),
-    (50, 36, 2, 80.00),
-    (51, 36, 6, 70.00),
-    (52, 37, 1, 25.00),
-    (53, 38, 8, 120.00),
-    (54, 39, 4, 30.00),
-    (55, 39, 9, 15.00),
-    (56, 40, 3, 60.00),
-    (57, 41, 5, 35.00),
-    (58, 41, 7, 90.00),
-    (59, 42, 1, 25.00),
-    (60, 43, 6, 70.00),
-    (61, 44, 2, 80.00),
-    (62, 44, 10, 100.00),
-    (63, 45, 9, 15.00),
-    (64, 46, 4, 30.00),
-    (65, 47, 8, 120.00),
-    (66, 47, 3, 60.00),
-    (67, 48, 1, 25.00),
-    (68, 49, 5, 35.00),
-    (69, 50, 6, 70.00),
-    (70, 50, 7, 90.00),
-    (71, 51, 2, 80.00),
-    (72, 52, 9, 15.00),
-    (73, 52, 4, 30.00),
-    (74, 53, 1, 25.00),
-    (75, 54, 10, 100.00),
-    (76, 55, 3, 60.00),
-    (77, 55, 8, 120.00),
-    (78, 56, 5, 35.00),
-    (79, 57, 6, 70.00),
-    (80, 57, 2, 80.00),
-    (81, 58, 1, 25.00),
-    (82, 59, 9, 15.00),
-    (83, 60, 7, 90.00),
-    (84, 60, 4, 30.00),
-    (85, 61, 3, 60.00),
-    (86, 62, 10, 100.00),
-    (87, 62, 5, 35.00),
-    (88, 63, 2, 80.00),
-    (89, 64, 8, 120.00),
-    (90, 65, 1, 25.00),
-    (91, 65, 6, 70.00),
-    (92, 66, 9, 15.00),
-    (93, 67, 4, 30.00),
-    (94, 67, 3, 60.00),
-    (95, 68, 7, 90.00),
-    (96, 69, 5, 35.00),
-    (97, 70, 2, 80.00),
-    (98, 70, 10, 100.00),
-    (99, 71, 1, 25.00),
-    (100, 72, 6, 70.00),
-    (101, 73, 8, 120.00),
-    (102, 73, 9, 15.00),
-    (103, 74, 4, 30.00),
-    (104, 75, 3, 60.00),
-    (105, 75, 5, 35.00),
-    (106, 76, 2, 80.00),
-    (107, 77, 7, 90.00),
-    (108, 77, 1, 25.00),
-    (109, 78, 10, 100.00),
-    (110, 79, 6, 70.00),
-    (111, 80, 9, 15.00),
-    (112, 80, 4, 30.00),
-    (113, 81, 8, 120.00),
-    (114, 82, 3, 60.00),
-    (115, 82, 2, 80.00),
-    (116, 83, 5, 35.00),
-    (117, 84, 1, 25.00),
-    (118, 85, 7, 90.00),
-    (119, 85, 10, 100.00),
-    (120, 86, 6, 70.00),
-    (121, 87, 9, 15.00),
-    (122, 87, 4, 30.00),
-    (123, 88, 2, 80.00),
-    (124, 89, 8, 120.00),
-    (125, 90, 5, 35.00),
-    (126, 90, 3, 60.00),
-    (127, 91, 1, 25.00),
-    (128, 92, 7, 90.00),
-    (129, 93, 10, 100.00),
-    (130, 93, 6, 70.00),
-    (131, 94, 9, 15.00),
-    (132, 95, 4, 30.00),
-    (133, 95, 2, 80.00),
-    (134, 96, 8, 120.00),
-    (135, 97, 5, 35.00),
-    (136, 98, 3, 60.00),
-    (137, 98, 1, 25.00),
-    (138, 99, 7, 90.00),
-    (139, 100, 10, 100.00),
-    (140, 100, 6, 70.00);
+```sql
+SELECT [columns you want]
+FROM [table name]
+WHERE [filter conditions]
+GROUP BY [columns without aggregation]
+HAVING [filter for aggregated results]
+ORDER BY [columns to sort by];
+```
+
+- `SELECT` — what do you want to see?
+- `FROM` — where are you getting it from?
+- `WHERE` — narrow things down
+- `GROUP BY` — group your data (usually for aggregation)
+- `HAVING` — filter after grouping (like WHERE but for grouped stuff)
+- `ORDER BY` — sort the final result
+
+---
+
+## Part 4: SELECT Examples
+
+### Get Everything
+
+```sql
+SELECT * FROM customers;
+```
+
+### Get Specific Columns
+
+```sql
+SELECT customer_id, full_name, email
+FROM customers;
+```
+
+### Limit Results
+
+```sql
+SELECT * FROM transactions
+LIMIT 10;
+```
+
+### Aliases — Rename Columns
+
+```sql
+SELECT full_name AS name, phone_number AS phone
+FROM customers;
+```
+
+### Expressions — Math Inside SELECT
+
+```sql
+SELECT service_name, base_price, base_price * 1.1 AS price_with_tax
+FROM services;
+```
+
+### DISTINCT — Remove Duplicates
+
+```sql
+SELECT DISTINCT outlet_id
+FROM transactions;
+```
+
+---
+
+## Part 5: Sorting
+
+Sort results by one or more columns.
+
+```sql
+SELECT column1, column2, ...
+FROM table_name
+ORDER BY column1 [ASC|DESC], column2 [ASC|DESC], ...;
+```
+
+- `ASC` = Ascending (default)
+- `DESC` = Descending
+- Multiple columns: sorts by column1 first, then column2 for ties
+
+**Examples:**
+
+```sql
+-- Services from highest to lowest price
+SELECT service_name, base_price
+FROM services
+ORDER BY base_price DESC;
+
+-- Customers alphabetically by name
+SELECT * FROM customers
+ORDER BY full_name ASC;
+
+-- Transactions by date descending, then customer_id
+SELECT * FROM transactions
+ORDER BY date DESC, customer_id ASC;
+```
+
+---
+
+## Part 6: Filtering
+
+Use `WHERE` to filter rows. If the condition is true, the row stays. If not, bye.
+
+```sql
+SELECT column1, column2, ...
+FROM table_name
+WHERE condition;
+```
+
+### Equality
+
+```sql
+-- Exact match
+SELECT * FROM services
+WHERE service_name = 'Haircut';
+```
+
+### Inequality
+
+```sql
+-- Greater than
+SELECT * FROM services
+WHERE base_price > 50;
+
+-- Not equal
+SELECT * FROM transactions
+WHERE outlet_id <> 3;
+```
+
+### Range (BETWEEN)
+
+Inclusive of both ends.
+
+```sql
+SELECT * FROM transactions
+WHERE date BETWEEN '2025-01-01' AND '2025-03-31';
+```
+
+### Pattern Matching (LIKE)
+
+- `%` = any number of characters
+- `_` = exactly one character
+
+```sql
+-- Find all @email.com users
+SELECT * FROM customers
+WHERE email LIKE '%@email.com';
+
+-- Names starting with 'A'
+SELECT * FROM customers
+WHERE full_name LIKE 'A%';
+```
+
+### NULL Checks
+
+`NULL` is not "zero" or "empty" — it means "nothing exists here."
+
+```sql
+-- Find rows with no value
+SELECT * FROM customers
+WHERE email IS NULL;
+
+-- Find rows that have a value
+SELECT * FROM customers
+WHERE email IS NOT NULL;
+```
+
+> Never use `= NULL`. Always use `IS NULL` or `IS NOT NULL`.
+
+### Combining Conditions (AND / OR / NOT)
+
+- `AND` = all conditions must be true
+- `OR` = at least one must be true
+- `NOT` = flips the condition
+
+```sql
+-- Services that are massages AND cost more than $80
+SELECT * FROM services
+WHERE service_name LIKE '%Massage%' AND base_price > 80;
+
+-- Transactions at outlet 1 OR outlet 2
+SELECT * FROM transactions
+WHERE outlet_id = 1 OR outlet_id = 2;
+
+-- Transactions NOT in January
+SELECT * FROM transactions
+WHERE NOT (date BETWEEN '2025-01-01' AND '2025-01-31');
+```
+
+### Using Functions in WHERE
+
+```sql
+-- Match exact date (strips time component)
+SELECT * FROM transactions
+WHERE DATE(date) = '2025-03-04';
+```
+
+---
+
+## Part 7: Grouping
+
+Grouping lets you **summarise data** by columns and run calculations for each group. Usually paired with aggregate functions: `SUM`, `COUNT`, `AVG`, `MIN`, `MAX`.
+
+```sql
+SELECT column1, aggregate_function(column2)
+FROM table_name
+GROUP BY column1;
+```
+
+> **Rule:** Every column in SELECT must either be in GROUP BY, or be wrapped in an aggregate function.
+
+### COUNT — How Many Rows Per Group
+
+```sql
+-- How many transactions per outlet
+SELECT outlet_id, COUNT(*) AS total_transactions
+FROM transactions
+GROUP BY outlet_id
+ORDER BY total_transactions DESC;
+```
+
+### SUM — Add Up Values Per Group
+
+```sql
+-- Total revenue per service
+SELECT service_id, SUM(subtotal) AS total_revenue
+FROM transaction_details
+GROUP BY service_id
+ORDER BY total_revenue DESC;
+```
+
+### AVG — Average Value Per Group
+
+```sql
+-- Average subtotal per service
+SELECT service_id, AVG(subtotal) AS avg_revenue
+FROM transaction_details
+GROUP BY service_id;
+```
+
+### MIN — Lowest Value Per Group
+
+```sql
+-- Cheapest subtotal recorded per service
+SELECT service_id, MIN(subtotal) AS min_revenue
+FROM transaction_details
+GROUP BY service_id;
+```
+
+### MAX — Highest Value Per Group
+
+```sql
+-- Highest subtotal recorded per service
+SELECT service_id, MAX(subtotal) AS max_revenue
+FROM transaction_details
+GROUP BY service_id;
+```
+
+### HAVING — Filter After Grouping
+
+`HAVING` is like `WHERE` but for grouped results.
+
+```sql
+-- Outlets with more than 10 transactions
+SELECT outlet_id, COUNT(*) AS total_transactions
+FROM transactions
+GROUP BY outlet_id
+HAVING COUNT(*) > 10;
+
+-- Customers who spent more than $100 total
+SELECT customer_id, SUM(subtotal) AS total_spent
+FROM transaction_details td
+JOIN transactions t ON td.transaction_id = t.transaction_id
+GROUP BY customer_id
+HAVING SUM(subtotal) > 100
+ORDER BY total_spent DESC;
+```
+
+### Group by Multiple Columns
+
+```sql
+-- Transactions per outlet per month
+SELECT outlet_id,
+       DATE_TRUNC('month', date) AS month,
+       COUNT(*) AS total_transactions
+FROM transactions
+GROUP BY outlet_id, DATE_TRUNC('month', date)
+ORDER BY outlet_id, month;
+```
+
+---
+
+## Quick Reference
+
+| Clause | Purpose |
+|--------|---------|
+| `SELECT` | Choose columns |
+| `FROM` | Choose table |
+| `WHERE` | Filter rows (before grouping) |
+| `GROUP BY` | Group rows |
+| `HAVING` | Filter groups (after grouping) |
+| `ORDER BY` | Sort results |
+| `LIMIT` | Cap number of rows returned |
+
+| Aggregate | Meaning |
+|-----------|---------|
+| `COUNT(*)` | Number of rows |
+| `SUM(col)` | Total of values |
+| `AVG(col)` | Average of values |
+| `MIN(col)` | Lowest value |
+| `MAX(col)` | Highest value |
+
+| Filter Keyword | Usage |
+|----------------|-------|
+| `=` | Exact match |
+| `<>` or `!=` | Not equal |
+| `>`, `<`, `>=`, `<=` | Comparisons |
+| `BETWEEN a AND b` | Inclusive range |
+| `LIKE '%pattern%'` | Pattern match |
+| `IS NULL` | Check for missing value |
+| `AND`, `OR`, `NOT` | Combine conditions |
