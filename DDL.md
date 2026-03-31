@@ -168,16 +168,16 @@ CREATE TABLE TRANSACTION_DETAILS (
 ```sql
 -- OUTLETS (10)
 INSERT INTO OUTLETS VALUES
-(1,  'Downtown Branch',   '123 Main St, Singapore 010101',     '+65 6111 0001'),
-(2,  'Orchard Branch',    '456 Orchard Rd, Singapore 020202',  '+65 6111 0002'),
-(3,  'Bugis Branch',      '789 Bugis St, Singapore 030303',    '+65 6111 0003'),
-(4,  'Tampines Branch',   '321 Tampines Ave, Singapore 040404','+65 6111 0004'),
-(5,  'Jurong Branch',     '654 Jurong Rd, Singapore 050505',   '+65 6111 0005'),
-(6,  'Woodlands Branch',  '987 Woodlands Dr, Singapore 060606','+65 6111 0006'),
-(7,  'Bedok Branch',      '111 Bedok Rd, Singapore 070707',    '+65 6111 0007'),
-(8,  'Clementi Branch',   '222 Clementi Ave, Singapore 080808','+65 6111 0008'),
-(9,  'Ang Mo Kio Branch', '333 AMK Ave, Singapore 090909',     '+65 6111 0009'),
-(10, 'Bishan Branch',     '444 Bishan St, Singapore 101010',   '+65 6111 0010');
+(1,  'AutoCare Downtown',   '123 Main St, Singapore 010101',     '+65 6111 0001'),
+(2,  'AutoCare Orchard',    '456 Orchard Rd, Singapore 020202',  '+65 6111 0002'),
+(3,  'AutoCare Bugis',      '789 Bugis St, Singapore 030303',    '+65 6111 0003'),
+(4,  'AutoCare Tampines',   '321 Tampines Ave, Singapore 040404','+65 6111 0004'),
+(5,  'AutoCare Jurong',     '654 Jurong Rd, Singapore 050505',   '+65 6111 0005'),
+(6,  'AutoCare Woodlands',  '987 Woodlands Dr, Singapore 060606','+65 6111 0006'),
+(7,  'AutoCare Bedok',      '111 Bedok Rd, Singapore 070707',    '+65 6111 0007'),
+(8,  'AutoCare Clementi',   '222 Clementi Ave, Singapore 080808','+65 6111 0008'),
+(9,  'AutoCare Ang Mo Kio', '333 AMK Ave, Singapore 090909',     '+65 6111 0009'),
+(10, 'AutoCare Bishan',     '444 Bishan St, Singapore 101010',   '+65 6111 0010');
 
 -- CUSTOMERS (30)
 INSERT INTO CUSTOMERS VALUES
@@ -214,16 +214,16 @@ INSERT INTO CUSTOMERS VALUES
 
 -- SERVICES (10)
 INSERT INTO SERVICES VALUES
-(1,'Haircut',25.00),
-(2,'Hair Coloring',80.00),
-(3,'Hair Treatment',60.00),
-(4,'Manicure',30.00),
-(5,'Pedicure',35.00),
-(6,'Facial',70.00),
-(7,'Massage - 60min',90.00),
-(8,'Massage - 90min',120.00),
-(9,'Eyebrow Threading',15.00),
-(10,'Makeup Application',100.00);
+(1,'Oil Change',45.00),
+(2,'Tyre Replacement',200.00),
+(3,'Brake Service',150.00),
+(4,'Car Wash & Polish',35.00),
+(5,'Air Filter Replacement',30.00),
+(6,'Battery Replacement',120.00),
+(7,'Wheel Alignment',80.00),
+(8,'Engine Tune-Up',250.00),
+(9,'AC Service',90.00),
+(10,'Full Vehicle Inspection',60.00);
 
 -- TRANSACTIONS (100)
 INSERT INTO TRANSACTIONS VALUES
@@ -409,7 +409,7 @@ WHERE condition;
 ```sql
 -- Exact match
 SELECT * FROM services
-WHERE service_name = 'Haircut';
+WHERE service_name = 'Oil Change';
 ```
 
 ### Inequality
@@ -471,9 +471,9 @@ WHERE email IS NOT NULL;
 - `NOT` = flips the condition
 
 ```sql
--- Services that are massages AND cost more than $80
+-- Services that are replacements AND cost more than $100
 SELECT * FROM services
-WHERE service_name LIKE '%Massage%' AND base_price > 80;
+WHERE service_name LIKE '%Replacement%' AND base_price > 100;
 
 -- Transactions at outlet 1 OR outlet 2
 SELECT * FROM transactions
@@ -589,30 +589,30 @@ ORDER BY outlet_id, month;
 
 ## Quick Reference
 
-| Clause | Purpose |
-|--------|---------|
-| `SELECT` | Choose columns |
-| `FROM` | Choose table |
-| `WHERE` | Filter rows (before grouping) |
-| `GROUP BY` | Group rows |
-| `HAVING` | Filter groups (after grouping) |
-| `ORDER BY` | Sort results |
-| `LIMIT` | Cap number of rows returned |
+| Clause     | Purpose                        |
+| ---------- | ------------------------------ |
+| `SELECT`   | Choose columns                 |
+| `FROM`     | Choose table                   |
+| `WHERE`    | Filter rows (before grouping)  |
+| `GROUP BY` | Group rows                     |
+| `HAVING`   | Filter groups (after grouping) |
+| `ORDER BY` | Sort results                   |
+| `LIMIT`    | Cap number of rows returned    |
 
-| Aggregate | Meaning |
-|-----------|---------|
-| `COUNT(*)` | Number of rows |
-| `SUM(col)` | Total of values |
+| Aggregate  | Meaning           |
+| ---------- | ----------------- |
+| `COUNT(*)` | Number of rows    |
+| `SUM(col)` | Total of values   |
 | `AVG(col)` | Average of values |
-| `MIN(col)` | Lowest value |
-| `MAX(col)` | Highest value |
+| `MIN(col)` | Lowest value      |
+| `MAX(col)` | Highest value     |
 
-| Filter Keyword | Usage |
-|----------------|-------|
-| `=` | Exact match |
-| `<>` or `!=` | Not equal |
-| `>`, `<`, `>=`, `<=` | Comparisons |
-| `BETWEEN a AND b` | Inclusive range |
-| `LIKE '%pattern%'` | Pattern match |
-| `IS NULL` | Check for missing value |
-| `AND`, `OR`, `NOT` | Combine conditions |
+| Filter Keyword       | Usage                   |
+| -------------------- | ----------------------- |
+| `=`                  | Exact match             |
+| `<>` or `!=`         | Not equal               |
+| `>`, `<`, `>=`, `<=` | Comparisons             |
+| `BETWEEN a AND b`    | Inclusive range         |
+| `LIKE '%pattern%'`   | Pattern match           |
+| `IS NULL`            | Check for missing value |
+| `AND`, `OR`, `NOT`   | Combine conditions      |
