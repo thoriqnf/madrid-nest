@@ -13,7 +13,7 @@ CREATE TABLE employees (
     employee_id SERIAL PRIMARY KEY,
     first_name  VARCHAR(50),
     last_name   VARCHAR(50),
-    department_id INT,
+    department  VARCHAR(50),
     salary      DECIMAL(10,2)
 );
 
@@ -21,6 +21,10 @@ CREATE TABLE department (
     department_id INT PRIMARY KEY,
     department_name VARCHAR(50)
 );
+
+-- Seed Data for Supporting Tables
+INSERT INTO department (department_id, department_name) VALUES 
+(1, 'HR'), (2, 'IT'), (3, 'Sales'), (4, 'Marketing'), (5, 'Finance'), (6, 'Legal');
 
 -- Pokemon Demo Tables
 CREATE TABLE trainers (
@@ -41,6 +45,11 @@ CREATE TABLE gyms (
     type VARCHAR(20)
 );
 
+-- Seed Data for Pokemon Demo
+INSERT INTO trainers (name, type) VALUES ('Ash', 'Electric'), ('Misty', 'Water'), ('Brock', 'Rock');
+INSERT INTO pokemon_types (pokemon, type) VALUES ('Pikachu', 'Electric'), ('Squirtle', 'Water'), ('Onix', 'Rock');
+INSERT INTO gyms (gym, type) VALUES ('Pewter Gym', 'Rock'), ('Cerulean Gym', 'Water'), ('Vermilion Gym', 'Electric');
+
 -- Union Demo Tables
 CREATE TABLE patients (
     patient_id SERIAL PRIMARY KEY,
@@ -49,12 +58,20 @@ CREATE TABLE patients (
     address VARCHAR(100)
 );
 
-CREATE TABLE customers_union_demo (
+INSERT INTO patients (first_name, last_name_patient, address) VALUES 
+('Alice', 'Wonderland', '123 Rabbit Hole'),
+('Bob', 'Builder', '456 Construction St');
+
+CREATE TABLE customers (
     customer_id SERIAL PRIMARY KEY,
     first_name VARCHAR(50),
     last_name_customer VARCHAR(50),
     address VARCHAR(100)
 );
+
+INSERT INTO customers (first_name, last_name_customer, address) VALUES 
+('Charlie', 'Chocolate', '789 Factory Rd'),
+('Alice', 'Wonderland', '123 Rabbit Hole'); -- Duplicate for UNION demo
 
 -- Subquery Demo Tables
 CREATE TABLE products (
@@ -68,6 +85,10 @@ CREATE TABLE orders (
     customer_id INT,
     order_date DATE
 );
+
+-- Seed Data for Subquery Demo
+INSERT INTO products (product_name, price) VALUES ('Laptop', 1200), ('Mouse', 25), ('Keyboard', 45);
+INSERT INTO orders (customer_id, order_date) VALUES (1, '2026-04-01');
 ```
 
 > [!NOTE]
@@ -207,7 +228,7 @@ This is a `JOIN` by default. It only returns rows where the match exists in **bo
 SELECT employees.first_name, department.department_name
 FROM employees
 JOIN department
-ON employees.department_id = department.department_id;
+ON employees.department = department.department_name;
 ```
 
 ### 2. The Four Main Joins (Venn Logic)
@@ -227,8 +248,8 @@ To find data that **doesn't** have a match in the other table, use a `LEFT JOIN`
 -- Employees without a department
 SELECT a.*
 FROM employees a
-LEFT JOIN department b ON a.department_id = b.department_id
-WHERE b.department_id IS NULL;
+LEFT JOIN department b ON a.department = b.department_name
+WHERE b.department_name IS NULL;
 ```
 
 ---
@@ -270,11 +291,11 @@ You can combine the results of two or more `SELECT` queries into one result set 
 **Example:**
 ```sql
 -- Get addresses from both patients and customers
-SELECT first_name, last_name_patient, address
+SELECT first_name, last_name_patient as last_name, address
 FROM patients
 UNION
-SELECT first_name, last_name_customer, address
-FROM customers_union_demo;
+SELECT first_name, last_name_customer as last_name, address
+FROM customers;
 ```
 
 ---
@@ -312,7 +333,7 @@ Used in conditions like `IN`, `ANY`, or `EXISTS` to filter based on a list of re
 
 **Example: Find customers who have placed orders**
 ```sql
-SELECT customer_name
+SELECT first_name
 FROM customers
 WHERE customer_id IN (
     SELECT customer_id
