@@ -15,7 +15,10 @@ async function runMigrations() {
   });
 
   const migrationsDir = path.join(__dirname, 'migrations');
-  const files = fs.readdirSync(migrationsDir).filter(f => f.endsWith('.sql')).sort();
+  const files = fs
+    .readdirSync(migrationsDir)
+    .filter((f) => f.endsWith('.sql'))
+    .sort();
 
   console.log(`🚀 Starting migrations in: ${migrationsDir}`);
 
@@ -30,9 +33,18 @@ async function runMigrations() {
      * 2. Log a success message.
      * 3. Add a try-catch block for error handling.
      */
-    
+
     // --- START YOUR CODE HERE ---
-    
+
+    try {
+      console.log('start migrating');
+      await pool.query(sql);
+      console.log('migrating succcess ✅');
+    } catch (err) {
+      console.log('error migrte 🚫');
+      process.exit(1);
+    }
+
     // --- END YOUR CODE HERE ---
   }
 

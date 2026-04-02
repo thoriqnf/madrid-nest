@@ -19,7 +19,10 @@ async function runSeeds() {
   });
 
   const seedsDir = path.join(__dirname, 'seeds');
-  const files = fs.readdirSync(seedsDir).filter(f => f.endsWith('.sql')).sort();
+  const files = fs
+    .readdirSync(seedsDir)
+    .filter((f) => f.endsWith('.sql'))
+    .sort();
 
   console.log(`🌱 Starting seeds in: ${seedsDir}`);
 
@@ -34,9 +37,17 @@ async function runSeeds() {
      * 2. Log a success message for each file seeded.
      * 3. Handle any errors if the seed fails.
      */
-    
+
     // --- START YOUR CODE HERE ---
-    
+    try {
+      console.log('seeding started');
+      await pool.query(sql);
+      console.log('seeding success ✅');
+    } catch (err) {
+      console.log('seeding failed 🚫');
+      process.exit(1);
+    }
+
     // --- END YOUR CODE HERE ---
   }
 

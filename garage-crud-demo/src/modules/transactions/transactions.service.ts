@@ -12,8 +12,10 @@ export class TransactionsService {
    */
   async findAll() {
     // --- START YOUR CODE HERE ---
-    return [];
+    const query = 'SELECT * FROM transactions';
     // --- END YOUR CODE HERE ---
+    const result = await this.pool.query(query);
+    return result.rows;
   }
 
   /**
@@ -22,7 +24,12 @@ export class TransactionsService {
    */
   async create(dto: CreateTransactionDto) {
     // --- START YOUR CODE HERE ---
-    return null;
+    const { customer_id, outlet_id } = dto;
+    const query =
+      'INSERT INTO transactions (customer_id, outlet_id) VALUES ($1, $2) RETURNING *';
+    const result = await this.pool.query(query, [customer_id, outlet_id]);
+
+    return result.rows[0];
     // --- END YOUR CODE HERE ---
   }
 }

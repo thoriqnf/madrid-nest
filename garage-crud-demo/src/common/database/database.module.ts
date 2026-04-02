@@ -12,7 +12,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   providers: [
     {
       provide: 'DATABASE_POOL',
-      useFactory: (configService: ConfigService) => {
+      useFactory: async (configService: ConfigService) => {
         /**
          * TODO 1: Initialize the PostgreSQL Pool.
          * Instructions:
@@ -20,11 +20,22 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
          * 2. Use 'configService.get<string>()' or 'process.env' to get DB host, port, user, password, and name.
          * 3. Return the Pool instance.
          */
-        
-        // --- START YOUR CODE HERE ---
-        
-        // --- END YOUR CODE HERE ---
-        return null; // Remove this once you implement the Pool
+
+        const pool = new Pool({
+          host: configService.get<string>('DB_HOST'),
+          port: configService.get<number>('DB_PORT'),
+          user: configService.get<string>('DB_USER'),
+          password: configService.get<string>('DB_PASSWORD'),
+          database: configService.get<string>('DB_name'),
+        });
+
+        try {
+          await pool.query('SELECT NOW()');
+          console.log('DB Connected ✅');
+        } catch (error) {
+          console.error('DB not connected 🚫', error.message);
+        }
+        return pool;
       },
       inject: [ConfigService],
     },
