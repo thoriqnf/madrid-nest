@@ -2,6 +2,29 @@
 
 This project uses a standard NestJS structure with `/api/v1` as the global prefix. All database interactions are done using **raw SQL**.
 
+## 🛠 Database Management (No ORM)
+Instead of using an ORM like Prisma or TypeORM, we manage the database using manual SQL scripts.
+
+### 1. Reset Database (Optional)
+**Warning: This drops all tables.** Use this to start fresh.
+```bash
+npm run reset
+```
+
+### 2. Run Migrations
+Creates the tables defined in `scripts/migrations/`.
+```bash
+npm run migrate
+```
+
+### 3. Seed Data
+Populates the tables with sample data from `scripts/seeds/`.
+```bash
+npm run seed
+```
+
+---
+
 ## 1. Services API
 Endpoints for managing car services (Oil Change, Tire Rotation, etc.)
 
