@@ -23,15 +23,17 @@ async function runMigrations() {
     const filePath = path.join(migrationsDir, file);
     const sql = fs.readFileSync(filePath, 'utf8');
 
-    try {
-      console.log(`  - Executing: ${file}...`);
-      await pool.query(sql);
-      console.log(`  ✅ Success: ${file}`);
-    } catch (err) {
-      console.error(`  ❌ Failed: ${file}`);
-      console.error(`     Error: ${err.message}`);
-      process.exit(1);
-    }
+    /**
+     * TODO 9: Execute the migration.
+     * Instructions:
+     * 1. Use 'await pool.query(sql)' to run the migration script.
+     * 2. Log a success message.
+     * 3. Add a try-catch block for error handling.
+     */
+    
+    // --- START YOUR CODE HERE ---
+    
+    // --- END YOUR CODE HERE ---
   }
 
   console.log('✨ All migrations completed successfully!');

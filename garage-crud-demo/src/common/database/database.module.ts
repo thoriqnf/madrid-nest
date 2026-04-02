@@ -5,30 +5,26 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 /**
  * DatabaseModule sets up our connection to PostgreSQL.
  * Beginners: We use @Global() so we only have to import this module once in AppModule.
- * Every other module will then have access to the database!
  */
 @Global()
 @Module({
   imports: [ConfigModule],
   providers: [
     {
-      /**
-       * We create a "Provider" called DATABASE_POOL.
-       * Think of this as a shared object that any Service can ask for.
-       */
       provide: 'DATABASE_POOL',
       useFactory: (configService: ConfigService) => {
         /**
-         * We create a new Pool (connection group) using our environment variables.
-         * This is better than one single connection because it can handle more requests.
+         * TODO 1: Initialize the PostgreSQL Pool.
+         * Instructions:
+         * 1. Create a new 'Pool' from 'pg' library.
+         * 2. Use 'configService.get<string>()' or 'process.env' to get DB host, port, user, password, and name.
+         * 3. Return the Pool instance.
          */
-        return new Pool({
-          host: configService.get<string>('DB_HOST'),
-          port: configService.get<number>('DB_PORT'),
-          user: configService.get<string>('DB_USER'),
-          password: configService.get<string>('DB_PASSWORD'),
-          database: configService.get<string>('DB_NAME'),
-        });
+        
+        // --- START YOUR CODE HERE ---
+        
+        // --- END YOUR CODE HERE ---
+        return null; // Remove this once you implement the Pool
       },
       inject: [ConfigService],
     },

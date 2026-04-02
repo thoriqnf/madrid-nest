@@ -2,95 +2,69 @@ import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Pool } from 'pg';
 import { CreateServiceDto } from './dto/create-service.dto';
 
-/**
- * Interface definition for a Service row.
- * Beginners: This helps TypeScript understand what "columns" are in our database table.
- */
 export interface ServiceRow {
   service_id: number;
   service_name: string;
-  base_price: string; // PostgreSQL numeric types come back as strings in JS
+  base_price: string;
 }
 
-/**
- * ServicesService handles all logic for Garage Services (like Oil Change, Brake Repair).
- * Beginners: We use @Injectable() so NestJS can manage this class for us.
- */
 @Injectable()
 export class ServicesService {
-  /**
-   * DATABASE_POOL is our connection to PostgreSQL.
-   * We "Inject" it here so we can use it in our methods.
-   */
   constructor(@Inject('DATABASE_POOL') private readonly pool: Pool) {}
 
   /**
-   * Get all services available in the garage.
+   * TODO 2: Get all services from the database.
+   * Hint: SELECT * FROM services.
    */
   async findAll(): Promise<ServiceRow[]> {
-    try {
-      const result = await this.pool.query('SELECT * FROM services ORDER BY service_id ASC');
-      return result.rows;
-    } catch (error) {
-      console.error('Database Error in findAll:', error);
-      throw error;
-    }
+    // --- START YOUR CODE HERE ---
+    return []; 
+    // --- END YOUR CODE HERE ---
   }
 
   /**
-   * Find a specific service by its ID.
-   * If not found, we throw a "NotFoundException" (404 Error).
+   * TODO 3: Find one service by ID.
+   * Hint: Use WHERE service_id = $1.
    */
   async findOne(id: number): Promise<ServiceRow> {
-    const result = await this.pool.query('SELECT * FROM services WHERE service_id = $1', [id]);
-    
-    if (result.rows.length === 0) {
+    // --- START YOUR CODE HERE ---
+    const service = null; // Replace with your query logic
+    // --- END YOUR CODE HERE ---
+
+    if (!service) {
       throw new NotFoundException(`Service with ID ${id} not found`);
     }
-    
-    return result.rows[0];
+    return service;
   }
 
   /**
-   * Add a new service to the database.
-   * $1 and $2 are placeholders to prevent SQL Injection attacks.
+   * TODO 4: Create a new service.
+   * Hint: INSERT INTO services (name, price) VALUES ($1, $2) RETURNING *.
    */
   async create(dto: CreateServiceDto): Promise<ServiceRow> {
-    const { service_name, base_price } = dto;
-    
-    const result = await this.pool.query(
-      'INSERT INTO services (service_name, base_price) VALUES ($1, $2) RETURNING *',
-      [service_name, base_price],
-    );
-    
-    return result.rows[0];
+    // --- START YOUR CODE HERE ---
+    return null as any;
+    // --- END YOUR CODE HERE ---
   }
 
   /**
-   * Update an existing service.
-   * COALESCE ($1, service_name) means: Use the new value if provided, otherwise keep the old one.
+   * TODO 5: Update an existing service.
+   * Hint: Use UPDATE services SET ... WHERE service_id = $3.
    */
   async update(id: number, dto: Partial<CreateServiceDto>): Promise<ServiceRow> {
-    // First, make sure the service actually exists
-    await this.findOne(id);
-    
     const { service_name, base_price } = dto;
-    const result = await this.pool.query(
-      'UPDATE services SET service_name = COALESCE($1, service_name), base_price = COALESCE($2, base_price) WHERE service_id = $3 RETURNING *',
-      [service_name, base_price, id],
-    );
-    
-    return result.rows[0];
+    // --- START YOUR CODE HERE ---
+    return null as any;
+    // --- END YOUR CODE HERE ---
   }
 
   /**
-   * Delete a service from the database.
+   * TODO 6: Delete a service.
+   * Hint: Use DELETE FROM services WHERE service_id = $1.
    */
   async remove(id: number): Promise<void> {
-    const result = await this.pool.query('DELETE FROM services WHERE service_id = $1', [id]);
+    // --- START YOUR CODE HERE ---
     
-    if (result.rowCount === 0) {
-      throw new NotFoundException(`Service with ID ${id} not found`);
-    }
+    // --- END YOUR CODE HERE ---
   }
 }

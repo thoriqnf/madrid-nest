@@ -27,15 +27,17 @@ async function runSeeds() {
     const filePath = path.join(seedsDir, file);
     const sql = fs.readFileSync(filePath, 'utf8');
 
-    try {
-      console.log(`  - Seeding: ${file}...`);
-      await pool.query(sql);
-      console.log(`  ✅ Success: ${file}`);
-    } catch (err) {
-      console.error(`  ❌ Failed: ${file}`);
-      console.error(`     Error: ${err.message}`);
-      process.exit(1);
-    }
+    /**
+     * TODO 10: Populate the database with sample data.
+     * Instructions:
+     * 1. Use 'await pool.query(sql)' to run the seed script.
+     * 2. Log a success message for each file seeded.
+     * 3. Handle any errors if the seed fails.
+     */
+    
+    // --- START YOUR CODE HERE ---
+    
+    // --- END YOUR CODE HERE ---
   }
 
   console.log('✨ All seeds completed successfully!');
