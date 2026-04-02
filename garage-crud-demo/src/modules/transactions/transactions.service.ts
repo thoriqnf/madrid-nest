@@ -1,62 +1,39 @@
-import { Injectable, Inject, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { Pool } from 'pg';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 
+/**
+ * Service to handle shop transactions.
+ * Beginners: A "Service" is where we put our business logic and database queries.
+ */
 @Injectable()
 export class TransactionsService {
+  /**
+   * We inject the DATABASE_POOL to talk to PostgreSQL.
+   */
   constructor(@Inject('DATABASE_POOL') private readonly pool: Pool) {}
 
+  /**
+   * Fetch all transactions from the database.
+   * Beginners: This uses a simple SELECT query.
+   */
   async findAll() {
-    const query = `
-      SELECT t.*, 
-             json_agg(td.*) as details
-      FROM transactions t
-      LEFT JOIN transaction_details td ON t.transaction_id = td.transaction_id
-      GROUP BY t.transaction_id
-      ORDER BY t.date DESC
-    `;
+    const query = 'SELECT * FROM transactions ORDER BY date DESC';
     const result = await this.pool.query(query);
     return result.rows;
   }
 
+  /**
+   * Create a new transaction record.
+   * Beginners: We've simplified this to a basic INSERT.
+   * We use $1, $2 to prevent SQL Injection (security best practice).
+   */
   async create(dto: CreateTransactionDto) {
-    const { customer_id, outlet_id, details } = dto;
+    const { customer_id, outlet_id } = dto;
     
-    // Get a client from the pool to handle the TRANSACTION block
-    const client = await this.pool.connect();
+    const query = 'INSERT INTO transactions (customer_id, outlet_id) VALUES ($1, $2) RETURNING *';
+    const result = await this.pool.query(query, [customer_id, outlet_id]);
     
-    try {
-      // START TRANSACTION
-      await client.query('BEGIN');
-
-      // 1. Insert the main Transaction record
-      const transResult = await client.query(
-        'INSERT INTO transactions (customer_id, outlet_id) VALUES ($1, $2) RETURNING *',
-        [customer_id, outlet_id],
-      );
-      const transaction = transResult.rows[0];
-
-      // 2. Insert each Transaction Detail
-      const savedDetails: any[] = [];
-      for (const item of details) {
-        const detailResult = await client.query(
-          'INSERT INTO transaction_details (transaction_id, service_id, subtotal) VALUES ($1, $2, $3) RETURNING *',
-          [transaction.transaction_id, item.service_id, item.subtotal],
-        );
-        savedDetails.push(detailResult.rows[0]);
-      }
-
-      // COMMIT TRANSACTION (Saves all changes)
-      await client.query('COMMIT');
-      
-      return { ...transaction, details: savedDetails };
-    } catch (error) {
-      // ROLLBACK TRANSACTION (Cancels all changes if something went wrong)
-      await client.query('ROLLBACK');
-      throw new InternalServerErrorException('Database Transaction Failed: ' + error.message);
-    } finally {
-      // Release the client back to the pool
-      client.release();
-    }
+    return result.rows[0];
   }
 }

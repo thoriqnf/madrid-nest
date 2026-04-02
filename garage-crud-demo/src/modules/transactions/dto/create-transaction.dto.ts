@@ -1,24 +1,14 @@
-import { IsInt, IsArray, ValidateNested, IsNumber, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsInt } from 'class-validator';
 
-class TransactionDetailDto {
-  @IsInt()
-  service_id: number;
-
-  @IsNumber()
-  @Min(0)
-  subtotal: number;
-}
-
+/**
+ * Data Transfer Object (DTO) for creating a transaction.
+ * Beginners: A DTO defines the shape of data coming from the client (Postman/Frontend).
+ * We use "class-validator" decorators like @IsInt() to automatically check the data.
+ */
 export class CreateTransactionDto {
   @IsInt()
   customer_id: number;
 
   @IsInt()
   outlet_id: number;
-
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => TransactionDetailDto)
-  details: TransactionDetailDto[];
 }

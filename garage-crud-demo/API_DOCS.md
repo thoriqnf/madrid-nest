@@ -65,8 +65,8 @@ curl -X DELETE http://localhost:3000/api/v1/services/1
 
 ---
 
-## 2. Transactions API
-Endpoints for creating repair jobs with multiple services.
+## 2. Transactions API (Simplified CRUD)
+Endpoints for creating repair jobs (headers only).
 
 ### List All Transactions
 `GET /api/v1/transactions`
@@ -74,18 +74,14 @@ Endpoints for creating repair jobs with multiple services.
 curl http://localhost:3000/api/v1/transactions
 ```
 
-### Create Transaction (with details)
+### Create Transaction
 `POST /api/v1/transactions`
 ```json
 {
   "customer_id": 1,
-  "outlet_id": 1,
-  "details": [
-    { "service_id": 1, "subtotal": 50.0 },
-    { "service_id": 2, "subtotal": 30.0 }
-  ]
+  "outlet_id": 1
 }
 ```
 
-> [!TIP]
-> Each transaction creation uses a **SQL Transaction Block** (`BEGIN/COMMIT`). If any part fails (e.g., service ID doesn't exist), the entire transaction is rolled back automatically.
+> [!NOTE]
+> This version uses simplified CRUD for beginners. Nested transaction details are not included in the current API version.
