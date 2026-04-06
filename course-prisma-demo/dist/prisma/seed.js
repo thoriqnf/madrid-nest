@@ -8,34 +8,7 @@ const pool = new pg_1.Pool({ connectionString });
 const adapter = new adapter_pg_1.PrismaPg(pool);
 const prisma = new client_1.PrismaClient({ adapter });
 async function main() {
-    console.log('Seeding database (Simplified One-to-One)...');
-    await prisma.user.upsert({
-        where: { email: 'john@coursehub.com' },
-        update: {},
-        create: {
-            email: 'john@coursehub.com',
-            name: 'John Instructor',
-            profile: {
-                create: {
-                    bio: 'Senior Web Developer',
-                    phone: '+1234567890',
-                },
-            },
-        },
-    });
-    await prisma.user.upsert({
-        where: { email: 'alice@student.com' },
-        update: {},
-        create: {
-            email: 'alice@student.com',
-            name: 'Alice Learner',
-            profile: {
-                create: {
-                    bio: 'Aspiring developer',
-                },
-            },
-        },
-    });
+    console.log('Seeding database (Starter Template)...');
     console.log('Seeding completed successfully! 🌱');
 }
 main()

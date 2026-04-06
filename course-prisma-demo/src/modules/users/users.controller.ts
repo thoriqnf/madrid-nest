@@ -5,6 +5,12 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  // ==========================================
+  // TODO Prisma 6.1: Controller and Routing Setup
+  // ==========================================
+  // Currently the endpoints are fully mapped to the `UsersService`.
+  // As an advanced exercise, try adding validations to the `@Body()`!
+
   @Get()
   findAll() {
     return this.usersService.findAll();

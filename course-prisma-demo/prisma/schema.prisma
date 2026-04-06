@@ -6,28 +6,20 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+// ==========================================
+// TODO Prisma 2.1: Create a `User` model
+// ==========================================
+// 1. Fields: id (Int), email (String), name (String), createdAt, updatedAt
+// 2. Map the table name to `users`
 
-  // Relationships
-  profile   Profile?
+// ==========================================
+// TODO Prisma 2.2: Create a `Profile` model
+// ==========================================
+// 1. Fields: id (Int), bio (String?), avatarUrl (String?), phone (String?)
+// 2. Map the table name to `profiles`
 
-  @@map("users")
-}
-
-model Profile {
-  id        Int     @id @default(autoincrement())
-  bio       String?
-  avatarUrl String? @map("avatar_url")
-  phone     String?
-  
-  // One-to-One relation
-  userId    Int     @unique @map("user_id")
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("profiles")
-}
+// ==========================================
+// TODO Prisma 2.3: Implement One-to-One relationship
+// ==========================================
+// 1. Link `Profile` to `User` inside the Profile model.
+// 2. Add `@unique` on the `userId` foreign key to strictly enforce One-to-One!

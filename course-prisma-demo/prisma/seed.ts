@@ -8,37 +8,14 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  console.log('Seeding database (Simplified One-to-One)...');
+  console.log('Seeding database (Starter Template)...');
 
-  // Create Users with Profiles (Nested create: One-to-One)
-  await prisma.user.upsert({
-    where: { email: 'john@coursehub.com' },
-    update: {},
-    create: {
-      email: 'john@coursehub.com',
-      name: 'John Instructor',
-      profile: {
-        create: {
-          bio: 'Senior Web Developer',
-          phone: '+1234567890',
-        },
-      },
-    },
-  });
-
-  await prisma.user.upsert({
-    where: { email: 'alice@student.com' },
-    update: {},
-    create: {
-      email: 'alice@student.com',
-      name: 'Alice Learner',
-      profile: {
-        create: {
-          bio: 'Aspiring developer',
-        },
-      },
-    },
-  });
+  // ==========================================
+  // TODO Prisma 3.1: Insert a mock User with a nested Profile
+  // ==========================================
+  // 1. Write a Prisma query (upsert or create) to insert a User.
+  // 2. Use a "Nested Write" to simultaneously create their associated Profile!
+  // ==========================================
 
   console.log('Seeding completed successfully! 🌱');
 }

@@ -18,56 +18,19 @@ let UsersService = class UsersService {
         this.prisma = prisma;
     }
     async findAll() {
-        return this.prisma.user.findMany({
-            include: {
-                profile: true,
-            },
-            orderBy: { id: 'asc' },
-        });
+        throw new common_1.NotImplementedException('TODO Prisma 5.1: Fetch all users including their profile');
     }
     async findOne(id) {
-        return this.prisma.user.findUnique({
-            where: { id },
-            include: {
-                profile: true,
-            },
-        });
+        throw new common_1.NotImplementedException(`TODO Prisma 5.2: Fetch user ${id} and their profile`);
     }
     async create(data) {
-        return this.prisma.user.create({
-            data: {
-                email: data.email,
-                name: data.name,
-                profile: (data.bio || data.phone)
-                    ? {
-                        create: { bio: data.bio, phone: data.phone },
-                    }
-                    : undefined,
-            },
-            include: { profile: true },
-        });
+        throw new common_1.NotImplementedException('TODO Prisma 5.3: Create user AND nested profile simultaneously');
     }
     async update(id, data) {
-        return this.prisma.user.update({
-            where: { id },
-            data: {
-                name: data.name,
-                profile: (data.bio || data.phone)
-                    ? {
-                        upsert: {
-                            create: { bio: data.bio, phone: data.phone },
-                            update: { bio: data.bio, phone: data.phone },
-                        },
-                    }
-                    : undefined,
-            },
-            include: { profile: true },
-        });
+        throw new common_1.NotImplementedException('TODO Prisma 5.4: Update user and UPSERT their profile');
     }
     async remove(id) {
-        return this.prisma.user.delete({
-            where: { id },
-        });
+        throw new common_1.NotImplementedException(`TODO Prisma 5.5: Delete user ${id}`);
     }
 };
 exports.UsersService = UsersService;
