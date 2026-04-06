@@ -83,5 +83,35 @@ curl http://localhost:3000/api/v1/transactions
 }
 ```
 
-> [!NOTE]
-> This version uses simplified CRUD for beginners. Nested transaction details are not included in the current API version.
+---
+
+## 3. Library JOIN Demo
+Endpoints to demonstrate SQL **JOIN** operations using a library theme.
+
+### Books with Authors (INNER JOIN)
+`GET /api/v1/library/books-with-authors`
+Returns only books that have an assigned author.
+```bash
+curl http://localhost:3000/api/v1/library/books-with-authors
+```
+
+### Members & Loan Status (LEFT JOIN)
+`GET /api/v1/library/members-loans`
+Returns all members, including those who have never borrowed a book (shows `null` for loan details).
+```bash
+curl http://localhost:3000/api/v1/library/members-loans
+```
+
+### Active Loan Details (Multi-table JOIN)
+`GET /api/v1/library/active-loans`
+Joins `loans`, `members`, `books`, and `branches` to show full details of books currently out on loan.
+```bash
+curl http://localhost:3000/api/v1/library/active-loans
+```
+
+### Unread Books (LEFT JOIN + IS NULL)
+`GET /api/v1/library/unread-books`
+Returns books that have never been recorded in the `loans` table.
+```bash
+curl http://localhost:3000/api/v1/library/unread-books
+```
