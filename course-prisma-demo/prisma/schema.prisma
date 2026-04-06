@@ -2,6 +2,14 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// ==========================================
+// TODO Prisma 1.1: Configure environment variables in `.env`
+// TODO Prisma 1.2: Connect your Datasource
+// ==========================================
+// 1. Double check your `DATABASE_URL` inside the `.env` file (Step 1.1)
+// 2. Add `url = env("DATABASE_URL")` to the `datasource db` block below (Step 1.2)
+// ==========================================
+
 datasource db {
   provider = "postgresql"
 }
