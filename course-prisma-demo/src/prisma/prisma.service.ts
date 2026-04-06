@@ -7,25 +7,27 @@ import { PrismaPg } from '@prisma/adapter-pg';
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   constructor() {
     // ==========================================
-    // TODO Prisma 4.1: PrismaClient Inheritance & Adapter
+    // PRISMA BOILERPLATE: Driver Adapter Setup
     // ==========================================
-    // 1. Inherit from `PrismaClient` (already done via `extends`)
-    // 2. Set up the PG Adapter inside the constructor and call `super({ adapter })`
-    // ==========================================
-    super(); 
+    // This is required for the application to boot when using @prisma/adapter-pg.
+    // For more info, see: https://www.prisma.io/docs/orm/overview/databases/postgresql#driver-adapters
+    const connectionString = `${process.env.DATABASE_URL}`;
+    const pool = new Pool({ connectionString });
+    const adapter = new PrismaPg(pool);
+    super({ adapter });
   }
 
   // ==========================================
-  // TODO Prisma 4.2: Database Connection
+  // TODO Prisma 4.1: Database Connection
   // ==========================================
   // 1. Connect to the database inside `onModuleInit` (`await this.$connect()`)
   // 2. Disconnect from the database inside `onModuleDestroy` (`await this.$disconnect()`)
   // ==========================================
   async onModuleInit() {
-    // TODO: await this.$connect();
+    await this.$connect();
   }
 
   async onModuleDestroy() {
-    // TODO: await this.$disconnect();
+    await this.$disconnect();
   }
 }
