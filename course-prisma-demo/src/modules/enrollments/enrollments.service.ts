@@ -34,7 +34,6 @@ export class EnrollmentsService {
         course: {
           include: {
             lessons: { orderBy: { order: 'asc' } },
-            categories: true,
           },
         },
       },

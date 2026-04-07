@@ -32,7 +32,6 @@ export class CoursesController {
       description?: string;
       published?: boolean;
       authorId: number;
-      categoryIds?: number[];
       lessons?: { title: string; content?: string; order: number }[];
     },
   ) {
@@ -47,7 +46,6 @@ export class CoursesController {
       title?: string;
       description?: string;
       published?: boolean;
-      categoryIds?: number[];
     },
   ) {
     return this.coursesService.update(id, data);

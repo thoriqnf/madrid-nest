@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // ============================================================
@@ -55,7 +54,6 @@ model Course {
 
   // Relations
   lessons     Lesson[]     // 1-to-many: Course has many lessons
-  categories  Category[]   // M2M implicit: Prisma auto-creates join table
   enrollments Enrollment[] // M2M explicit: many users enroll in this course
 
   @@map("courses")
@@ -75,20 +73,7 @@ model Lesson {
   @@map("lessons")
 }
 
-// ============================================================
-// Many-to-Many (implicit): Course <-> Category
-// Prisma auto-creates `_CategoryToCourse` join table
-// ============================================================
-model Category {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-  slug String @unique
 
-  // Implicit M2M — no FK needed, Prisma handles the join table
-  courses Course[]
-
-  @@map("categories")
-}
 
 // ============================================================
 // Many-to-Many (explicit): User <-> Course via Enrollment

@@ -35,7 +35,6 @@ export class UsersService {
         courses: {
           include: {
             lessons: { orderBy: { order: 'asc' } },
-            categories: true,
             _count: { select: { enrollments: true } },
           },
         },

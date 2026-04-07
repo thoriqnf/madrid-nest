@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './modules/users/users.module';
 import { CoursesModule } from './modules/courses/courses.module';
-import { CategoriesModule } from './modules/categories/categories.module';
 import { EnrollmentsModule } from './modules/enrollments/enrollments.module';
 import { ConfigModule } from '@nestjs/config';
 
@@ -14,7 +13,6 @@ import { ConfigModule } from '@nestjs/config';
     PrismaModule,
     UsersModule,
     CoursesModule,
-    CategoriesModule,
     EnrollmentsModule,
   ],
   controllers: [AppController],

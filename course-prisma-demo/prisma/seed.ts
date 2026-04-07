@@ -10,25 +10,7 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
   console.log('🌱 Seeding CourseHub database...\n');
 
-  // ─── 1. Categories (M2M implicit targets) ─────────────────────────
-  console.log('📁 Creating categories...');
-  const webDev = await prisma.category.upsert({
-    where: { slug: 'web-development' },
-    update: {},
-    create: { name: 'Web Development', slug: 'web-development' },
-  });
-  const dataScience = await prisma.category.upsert({
-    where: { slug: 'data-science' },
-    update: {},
-    create: { name: 'Data Science', slug: 'data-science' },
-  });
-  const devOps = await prisma.category.upsert({
-    where: { slug: 'devops' },
-    update: {},
-    create: { name: 'DevOps', slug: 'devops' },
-  });
-
-  // ─── 2. Users + Profiles (1-to-1 nested write) ────────────────────
+  // ─── 1. Users + Profiles (1-to-1 nested write) ────────────────────
   console.log('👤 Creating users with profiles...');
   const alice = await prisma.user.upsert({
     where: { email: 'alice@coursehub.com' },
@@ -77,8 +59,8 @@ async function main() {
     },
   });
 
-  // ─── 3. Courses + Lessons (1-to-many) + Categories (M2M implicit connect) ──
-  console.log('📚 Creating courses with lessons and categories...');
+  // ─── 2. Courses + Lessons (1-to-many) ─────────────────────────────
+  console.log('📚 Creating courses with lessons...');
 
   const nestjsCourse = await prisma.course.create({
     data: {
@@ -87,7 +69,6 @@ async function main() {
         'Build production-grade APIs with NestJS, Prisma, and PostgreSQL.',
       published: true,
       author: { connect: { id: alice.id } },
-      categories: { connect: [{ id: webDev.id }] },
       lessons: {
         createMany: {
           data: [
@@ -118,7 +99,6 @@ async function main() {
       description: 'Learn React from scratch — components, hooks, and state management.',
       published: true,
       author: { connect: { id: alice.id } },
-      categories: { connect: [{ id: webDev.id }] },
       lessons: {
         createMany: {
           data: [
@@ -145,7 +125,6 @@ async function main() {
         'Hands-on machine learning with Python, Pandas, and scikit-learn.',
       published: true,
       author: { connect: { id: bob.id } },
-      categories: { connect: [{ id: dataScience.id }, { id: webDev.id }] },
       lessons: {
         createMany: {
           data: [
@@ -176,7 +155,6 @@ async function main() {
       description: 'Containerize and orchestrate your apps like a pro.',
       published: false, // draft course
       author: { connect: { id: bob.id } },
-      categories: { connect: [{ id: devOps.id }] },
       lessons: {
         createMany: {
           data: [
@@ -196,7 +174,7 @@ async function main() {
     },
   });
 
-  // ─── 4. Enrollments (M2M explicit — join table with extra fields) ──
+  // ─── 3. Enrollments (M2M explicit — join table with extra fields) ──
   console.log('🎓 Creating enrollments...');
 
   await prisma.enrollment.createMany({
@@ -234,7 +212,6 @@ async function main() {
   });
 
   console.log('\n✅ Seeding completed successfully!');
-  console.log('   - 3 Categories');
   console.log('   - 3 Users (with Profiles)');
   console.log('   - 4 Courses (with 10 Lessons)');
   console.log('   - 5 Enrollments');

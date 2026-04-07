@@ -15,7 +15,33 @@ Welcome to **CourseHub**, a complete Prisma ORM demo covering **every relationsh
 
 ---
 
-## 2. One-to-One — User ↔ Profile
+## 2. Configuration for Prisma 7+
+
+In Prisma 7, the `url` property is no longer placed inside the `datasource db` block in `schema.prisma`. It has been moved to the `prisma.config.ts` file instead.
+
+**`prisma.config.ts`:**
+```typescript
+import { defineConfig } from "prisma/config";
+
+export default defineConfig({
+  schema: "prisma/schema.prisma",
+  datasource: {
+    url: process.env["DATABASE_URL"],
+  },
+});
+```
+
+**`prisma/schema.prisma`:**
+```prisma
+datasource db {
+  provider = "postgresql"
+  // ❌ Do NOT put `url = env("DATABASE_URL")` here
+}
+```
+
+---
+
+## 3. One-to-One — User ↔ Profile
 
 A `User` can only have **one** `Profile`.
 
@@ -97,46 +123,7 @@ this.prisma.course.create({
 
 ---
 
-## 4. Many-to-Many (Implicit) — Course ↔ Category
 
-Prisma automatically creates a join table `_CategoryToCourse`. No FK needed in either model.
-
-```prisma
-model Course {
-  categories Category[] // Just list the other model!
-}
-
-model Category {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique
-  slug    String   @unique
-  courses Course[] // Back-relation
-
-  @@map("categories")
-}
-```
-
-### Query: Connect & Set
-```typescript
-// Connect categories when creating a course
-this.prisma.course.create({
-  data: {
-    title: 'Docker Course',
-    author: { connect: { id: 1 } },
-    categories: { connect: [{ id: 1 }, { id: 3 }] }
-  }
-});
-
-// Replace ALL categories on a course
-this.prisma.course.update({
-  where: { id: 1 },
-  data: {
-    categories: { set: [{ id: 2 }] } // Removes old, connects new
-  }
-});
-```
-
----
 
 ## 5. Many-to-Many (Explicit) — User ↔ Course via Enrollment
 
@@ -179,12 +166,12 @@ this.prisma.enrollment.update({
 
 ---
 
-## 6. Multi-Table JOINs (4+ Tables)
+## 5. Multi-Table JOINs (4 Tables)
 
 Prisma's `include` lets you join as many tables as needed:
 
 ```typescript
-// JOIN across User → Profile + Courses → Lessons + Categories + Enrollments → Course
+// JOIN across User → Profile + Courses → Lessons + Enrollments → Course
 this.prisma.user.findUnique({
   where: { id: 1 },
   include: {
@@ -192,7 +179,6 @@ this.prisma.user.findUnique({
     courses: {                      // +1 table (courses)
       include: {
         lessons: true,              // +1 table (lessons)
-        categories: true,           // +1 table (categories via join table)
         _count: { select: { enrollments: true } }
       }
     },
@@ -207,11 +193,11 @@ this.prisma.user.findUnique({
 });
 ```
 
-This single query touches **6 tables**: users, profiles, courses, lessons, categories (_CategoryToCourse), enrollments.
+This single query touches **5 tables**: users, profiles, courses, lessons, enrollments.
 
 ---
 
-## 7. Cascade Operations
+## 6. Cascade Operations
 
 All FKs use `onDelete: Cascade`. When you delete a parent, all children are automatically removed.
 
@@ -224,16 +210,15 @@ All FKs use `onDelete: Cascade`. When you delete a parent, all children are auto
 ### Delete Course → Cascades to:
 - ✅ Lessons (1-to-many)
 - ✅ Enrollments (explicit M2M)
-- ❌ Categories (implicit M2M — just unlinked, not deleted)
 
 ```typescript
-// This single call removes the user AND all related data across 5 tables
+// This single call removes the user AND all related data across 4 tables
 this.prisma.user.delete({ where: { id: 1 } });
 ```
 
 ---
 
-## 8. Recommended Workflow
+## 7. Recommended Workflow
 
 1. Update `prisma/schema.prisma`
 2. Run `npx prisma migrate dev --name <description>`
