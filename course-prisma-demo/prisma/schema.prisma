@@ -7,7 +7,7 @@ datasource db {
 }
 
 // ============================================================
-// 1-to-1: User <-> Profile
+// Model: User
 // ============================================================
 model User {
   id        Int      @id @default(autoincrement())
@@ -16,29 +16,19 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  // Relations
-  profile     Profile?
-  courses     Course[]     // 1-to-many: User authors many courses
-  enrollments Enrollment[] // M2M explicit: User enrolls in many courses
+  // TODO Relation 1.1: Add 1-to-1 relationship with the Profile model
+
+  // TODO Relation 1.2: Add 1-to-many relationship with the Course model (authoring)
+
+  // TODO Relation 1.4: Add many-to-many relationship with the Course model via Enrollment
 
   @@map("users")
 }
 
-model Profile {
-  id        Int     @id @default(autoincrement())
-  bio       String?
-  avatarUrl String? @map("avatar_url")
-  phone     String?
-
-  // 1-to-1 FK — @unique enforces strict one-to-one
-  userId Int  @unique @map("user_id")
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("profiles")
-}
+// TODO Relation 1.1: Create the Profile model here with a 1-to-1 relation to User
 
 // ============================================================
-// 1-to-many: User -> Course, Course -> Lesson
+// Model: Course
 // ============================================================
 model Course {
   id          Int      @id @default(autoincrement())
@@ -48,52 +38,15 @@ model Course {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  // FK to author (User) — cascade delete when author is deleted
-  authorId Int  @map("author_id")
-  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  // TODO Relation 1.2: Establish 1-to-many relationship side mapping to User (authorId)
 
-  // Relations
-  lessons     Lesson[]     // 1-to-many: Course has many lessons
-  enrollments Enrollment[] // M2M explicit: many users enroll in this course
+  // TODO Relation 1.3: Establish 1-to-many relationship with Lesson model
+
+  // TODO Relation 1.4: Add many-to-many relationship with User model via Enrollment
 
   @@map("courses")
 }
 
-model Lesson {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  order     Int      @default(0)
-  createdAt DateTime @default(now()) @map("created_at")
+// TODO Relation 1.3: Create the Lesson model here with a 1-to-many relation to Course
 
-  // FK to Course — cascade delete when course is deleted
-  courseId Int    @map("course_id")
-  course  Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-  @@map("lessons")
-}
-
-
-
-// ============================================================
-// Many-to-Many (explicit): User <-> Course via Enrollment
-// Manual join table with extra fields (enrolledAt, progress, completedAt)
-// ============================================================
-model Enrollment {
-  id          Int       @id @default(autoincrement())
-  enrolledAt  DateTime  @default(now()) @map("enrolled_at")
-  completedAt DateTime? @map("completed_at")
-  progress    Int       @default(0) // percentage 0-100
-
-  // FK to User — cascade delete when user is deleted
-  userId Int  @map("user_id")
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // FK to Course — cascade delete when course is deleted
-  courseId Int    @map("course_id")
-  course  Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-  // Prevent duplicate enrollments
-  @@unique([userId, courseId])
-  @@map("enrollments")
-}
+// TODO Relation 1.4: Create the Enrollment model here for Explicit M2M between User and Course

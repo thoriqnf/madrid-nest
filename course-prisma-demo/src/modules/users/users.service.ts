@@ -5,107 +5,36 @@ import { PrismaService } from '../../prisma/prisma.service';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  // ── GET all users ──────────────────────────────────────────────────
-  // Demonstrates: Multi-table JOIN (User → Profile + Courses + Enrollments.Course)
   async findAll() {
-    return this.prisma.user.findMany({
-      include: {
-        profile: true,
-        courses: {
-          include: {
-            _count: { select: { lessons: true } },
-          },
-        },
-        enrollments: {
-          include: {
-            course: { select: { id: true, title: true } },
-          },
-        },
-      },
-    });
+    // TODO Relation 3.1: Update `findAll` to deeply include the user's `profile` and a count of their `courses`.
+    return "Returns an array of users";
   }
 
-  // ── GET one user ───────────────────────────────────────────────────
-  // Demonstrates: Deep include across 4+ tables
   async findOne(id: number) {
-    const user = await this.prisma.user.findUnique({
-      where: { id },
-      include: {
-        profile: true,
-        courses: {
-          include: {
-            lessons: { orderBy: { order: 'asc' } },
-            _count: { select: { enrollments: true } },
-          },
-        },
-        enrollments: {
-          include: {
-            course: {
-              include: {
-                author: { select: { id: true, name: true } },
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!user) {
-      throw new NotFoundException(`User #${id} not found`);
-    }
-    return user;
+    // TODO Relation 3.2: Update `findOne` to execute a deep include across 4 tables (Profile, Courses, Lessons, Enrollments).
+    return `Returns user with ID #${id}`;
   }
 
-  // ── CREATE user ────────────────────────────────────────────────────
-  // Demonstrates: Nested write (create User + Profile in one transaction)
   async create(data: {
     email: string;
     name: string;
     bio?: string;
     phone?: string;
   }) {
-    return this.prisma.user.create({
-      data: {
-        email: data.email,
-        name: data.name,
-        profile: {
-          create: {
-            bio: data.bio,
-            phone: data.phone,
-          },
-        },
-      },
-      include: { profile: true },
-    });
+    // TODO Relation 3.3: Update `create` to perform a nested write for the user and profile simultaneously.
+    return "Creates a new user and profile";
   }
 
-  // ── UPDATE user ────────────────────────────────────────────────────
-  // Demonstrates: Update + Upsert nested relation
   async update(
     id: number,
     data: { email?: string; name?: string; bio?: string; phone?: string },
   ) {
-    return this.prisma.user.update({
-      where: { id },
-      data: {
-        email: data.email,
-        name: data.name,
-        profile: {
-          upsert: {
-            create: { bio: data.bio, phone: data.phone },
-            update: { bio: data.bio, phone: data.phone },
-          },
-        },
-      },
-      include: { profile: true },
-    });
+    // TODO Relation 3.4: Update `update` to perform an `upsert` on the nested profile (create if it doesn't exist, update if it does).
+    return "Updates user and their profile";
   }
 
-  // ── DELETE user ────────────────────────────────────────────────────
-  // Demonstrates: Cascade delete (Profile, Courses, Lessons, Enrollments all removed)
   async remove(id: number) {
-    return this.prisma.user.delete({
-      where: { id },
-    });
+    // TODO Relation 3.5: Delete user and verify Cascade deletes effectively wipe their profile, courses, and enrollments.
+    return `Deletes user with ID #${id}`;
   }
 }
