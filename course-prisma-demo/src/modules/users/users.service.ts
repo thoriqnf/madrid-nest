@@ -83,11 +83,12 @@ export class UsersService {
   // Demonstrates: Update + Upsert nested relation
   async update(
     id: number,
-    data: { name?: string; bio?: string; phone?: string },
+    data: { email?: string; name?: string; bio?: string; phone?: string },
   ) {
     return this.prisma.user.update({
       where: { id },
       data: {
+        email: data.email,
         name: data.name,
         profile: {
           upsert: {

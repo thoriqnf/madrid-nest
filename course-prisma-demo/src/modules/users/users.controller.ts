@@ -34,7 +34,7 @@ export class UsersController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: { name?: string; bio?: string; phone?: string },
+    @Body() data: { email?: string; name?: string; bio?: string; phone?: string },
   ) {
     return this.usersService.update(id, data);
   }
