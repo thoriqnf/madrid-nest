@@ -2,32 +2,113 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// ==========================================
-// TODO Prisma 1.1: Configure environment variables in `.env`
-// TODO Prisma 1.2: Connect your Datasource
-// ==========================================
-// 1. Double check your `DATABASE_URL` inside the `.env` file (Step 1.1)
-// 2. Add `url = env("DATABASE_URL")` to the `datasource db` block below (Step 1.2)
-// ==========================================
-
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-// ==========================================
-// TODO Prisma 2.1: Create a `User` model
-// ==========================================
-// 1. Fields: id (Int), email (String), name (String), createdAt, updatedAt
-// 2. Map the table name to `users`
+// ============================================================
+// 1-to-1: User <-> Profile
+// ============================================================
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-// ==========================================
-// TODO Prisma 2.2: Create a `Profile` model
-// ==========================================
-// 1. Fields: id (Int), bio (String?), avatarUrl (String?), phone (String?)
-// 2. Map the table name to `profiles`
+  // Relations
+  profile     Profile?
+  courses     Course[]     // 1-to-many: User authors many courses
+  enrollments Enrollment[] // M2M explicit: User enrolls in many courses
 
-// ==========================================
-// TODO Prisma 2.3: Implement One-to-One relationship
-// ==========================================
-// 1. Link `Profile` to `User` inside the Profile model.
-// 2. Add `@unique` on the `userId` foreign key to strictly enforce One-to-One!
+  @@map("users")
+}
+
+model Profile {
+  id        Int     @id @default(autoincrement())
+  bio       String?
+  avatarUrl String? @map("avatar_url")
+  phone     String?
+
+  // 1-to-1 FK — @unique enforces strict one-to-one
+  userId Int  @unique @map("user_id")
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+// ============================================================
+// 1-to-many: User -> Course, Course -> Lesson
+// ============================================================
+model Course {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // FK to author (User) — cascade delete when author is deleted
+  authorId Int  @map("author_id")
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  // Relations
+  lessons     Lesson[]     // 1-to-many: Course has many lessons
+  categories  Category[]   // M2M implicit: Prisma auto-creates join table
+  enrollments Enrollment[] // M2M explicit: many users enroll in this course
+
+  @@map("courses")
+}
+
+model Lesson {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // FK to Course — cascade delete when course is deleted
+  courseId Int    @map("course_id")
+  course  Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("lessons")
+}
+
+// ============================================================
+// Many-to-Many (implicit): Course <-> Category
+// Prisma auto-creates `_CategoryToCourse` join table
+// ============================================================
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  slug String @unique
+
+  // Implicit M2M — no FK needed, Prisma handles the join table
+  courses Course[]
+
+  @@map("categories")
+}
+
+// ============================================================
+// Many-to-Many (explicit): User <-> Course via Enrollment
+// Manual join table with extra fields (enrolledAt, progress, completedAt)
+// ============================================================
+model Enrollment {
+  id          Int       @id @default(autoincrement())
+  enrolledAt  DateTime  @default(now()) @map("enrolled_at")
+  completedAt DateTime? @map("completed_at")
+  progress    Int       @default(0) // percentage 0-100
+
+  // FK to User — cascade delete when user is deleted
+  userId Int  @map("user_id")
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // FK to Course — cascade delete when course is deleted
+  courseId Int    @map("course_id")
+  course  Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  // Prevent duplicate enrollments
+  @@unique([userId, courseId])
+  @@map("enrollments")
+}

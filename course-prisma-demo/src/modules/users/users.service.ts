@@ -1,47 +1,111 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  // ==========================================
-  // TODO Prisma 5.1: Fetch all users
-  // ==========================================
-  // Return all users from the database. Use `include` to fetch their 1-to-1 profile!
+  // ── GET all users ──────────────────────────────────────────────────
+  // Demonstrates: Multi-table JOIN (User → Profile + Courses + Enrollments.Course)
   async findAll() {
-    throw new NotImplementedException('TODO Prisma 5.1: Fetch all users including their profile');
+    return this.prisma.user.findMany({
+      include: {
+        profile: true,
+        courses: {
+          include: {
+            _count: { select: { lessons: true } },
+          },
+        },
+        enrollments: {
+          include: {
+            course: { select: { id: true, title: true } },
+          },
+        },
+      },
+    });
   }
 
-  // ==========================================
-  // TODO Prisma 5.2: Fetch one user
-  // ==========================================
-  // Return a single user by ID including their profile.
+  // ── GET one user ───────────────────────────────────────────────────
+  // Demonstrates: Deep include across 4+ tables
   async findOne(id: number) {
-    throw new NotImplementedException(`TODO Prisma 5.2: Fetch user ${id} and their profile`);
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        profile: true,
+        courses: {
+          include: {
+            lessons: { orderBy: { order: 'asc' } },
+            categories: true,
+            _count: { select: { enrollments: true } },
+          },
+        },
+        enrollments: {
+          include: {
+            course: {
+              include: {
+                author: { select: { id: true, name: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User #${id} not found`);
+    }
+    return user;
   }
 
-  // ==========================================
-  // TODO Prisma 5.3: Create a user
-  // ==========================================
-  // Create a user AND their nested profile simultaneously in one query.
-  async create(data: { email: string; name: string; bio?: string; phone?: string }) {
-    throw new NotImplementedException('TODO Prisma 5.3: Create user AND nested profile simultaneously');
+  // ── CREATE user ────────────────────────────────────────────────────
+  // Demonstrates: Nested write (create User + Profile in one transaction)
+  async create(data: {
+    email: string;
+    name: string;
+    bio?: string;
+    phone?: string;
+  }) {
+    return this.prisma.user.create({
+      data: {
+        email: data.email,
+        name: data.name,
+        profile: {
+          create: {
+            bio: data.bio,
+            phone: data.phone,
+          },
+        },
+      },
+      include: { profile: true },
+    });
   }
 
-  // ==========================================
-  // TODO Prisma 5.4: Update user & UPSERT profile
-  // ==========================================
-  // Update the user details. If bio/phone are provided, `upsert` the profile!
-  async update(id: number, data: { name?: string; bio?: string; phone?: string }) {
-    throw new NotImplementedException('TODO Prisma 5.4: Update user and UPSERT their profile');
+  // ── UPDATE user ────────────────────────────────────────────────────
+  // Demonstrates: Update + Upsert nested relation
+  async update(
+    id: number,
+    data: { name?: string; bio?: string; phone?: string },
+  ) {
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        name: data.name,
+        profile: {
+          upsert: {
+            create: { bio: data.bio, phone: data.phone },
+            update: { bio: data.bio, phone: data.phone },
+          },
+        },
+      },
+      include: { profile: true },
+    });
   }
 
-  // ==========================================
-  // TODO Prisma 5.5: Delete user
-  // ==========================================
-  // Delete the user by ID. (Their profile should cascade delete).
+  // ── DELETE user ────────────────────────────────────────────────────
+  // Demonstrates: Cascade delete (Profile, Courses, Lessons, Enrollments all removed)
   async remove(id: number) {
-    throw new NotImplementedException(`TODO Prisma 5.5: Delete user ${id}`);
+    return this.prisma.user.delete({
+      where: { id },
+    });
   }
 }
