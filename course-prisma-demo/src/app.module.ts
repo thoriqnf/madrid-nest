@@ -23,14 +23,8 @@ import { AuthModule } from './auth/auth.module';
   controllers: [AppController],
   providers: [
     AppService,
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
+    // TODO Auth: 2.3 - Register Global JWT Guard
+    // TODO Auth: 3.3 - Register Global Roles Guard
   ],
 })
 export class AppModule {}

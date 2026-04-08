@@ -8,6 +8,7 @@ import { Public } from './decorators/public.decorator';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  // TODO Auth: 1.6 - Register and Login Endpoints (Mark as @Public)
   @Public()
   @Post('register')
   register(@Body() dto: RegisterDto) {
@@ -22,6 +23,7 @@ export class AuthController {
 
   @Get('profile')
   getProfile(@Request() req: any) {
+    // This will work once JWT Strategy is implemented
     return req.user;
   }
 }

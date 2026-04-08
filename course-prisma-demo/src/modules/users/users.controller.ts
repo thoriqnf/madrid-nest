@@ -17,13 +17,13 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Public()
+  // TODO Auth: 4.1 - Mark as @Public()
   @Get()
   findAll(@Query('search') search?: string) {
     return this.usersService.findAll(search);
   }
 
-  @Public()
+  // TODO Auth: 4.1 - Mark as @Public()
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findOne(id);
@@ -44,7 +44,7 @@ export class UsersController {
     return this.usersService.update(id, data);
   }
 
-  @Roles('ADMIN')
+  // TODO Auth: 4.1 - Mark as @Roles('ADMIN')
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.remove(id);

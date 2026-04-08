@@ -9,16 +9,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 @Module({
   imports: [
     PassportModule,
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET'),
-        signOptions: { 
-          expiresIn: config.get<string>('JWT_EXPIRATION', '24h') as any 
-        },
-      }),
-    }),
+    // TODO Auth: 1.2 - Configure JwtModule registerAsync (imports, inject, useFactory)
+    JwtModule.register({}),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

@@ -7,26 +7,12 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-
-    if (!requiredRoles) {
-      return true;
-    }
-
-    const { user } = context.switchToHttp().getRequest();
-
-    if (!user || !user.role) {
-      throw new ForbiddenException('User context is missing role information');
-    }
-
-    const hasRole = requiredRoles.includes(user.role);
-    if (!hasRole) {
-      throw new ForbiddenException(`Require one of these roles: ${requiredRoles.join(', ')}`);
-    }
-
+    // TODO Auth: 3.2 - Implement Role-based Access Logic
+    // 1. Extract required roles using reflector
+    // 2. If no roles are required, return true
+    // 3. Get the user from the request
+    // 4. Check if user's role matches any of the required roles
+    // 5. Throw ForbiddenException if role check fails
     return true;
   }
 }

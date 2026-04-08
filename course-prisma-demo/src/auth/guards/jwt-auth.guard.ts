@@ -10,13 +10,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   canActivate(context: ExecutionContext) {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-    if (isPublic) {
-      return true;
-    }
+    // TODO Auth: 2.2 - Implement Public Access Override in Guard
+    // 1. Check if the handler or class is marked with @Public()
+    // 2. If it is public, return true
+    // 3. Otherwise, use the default AuthGuard('jwt') protection
     return super.canActivate(context);
   }
 }

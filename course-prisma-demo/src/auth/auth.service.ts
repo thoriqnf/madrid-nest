@@ -13,48 +13,19 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email: dto.email },
-    });
-
-    if (existingUser) {
-      throw new ConflictException('Email already in use');
-    }
-
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
-
-    const user = await this.prisma.user.create({
-      data: {
-        email: dto.email,
-        name: dto.name,
-        password: hashedPassword,
-      },
-    });
-
-    const payload = { sub: user.id, email: user.email, role: user.role };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    // TODO Auth: 1.3 - Implement User Registration
+    // 1. Check if user already exists
+    // 2. Hash the password using bcrypt
+    // 3. Create the user in Prisma
+    // 4. Generate and return a JWT access_token
+    return { access_token: 'TODO' };
   }
 
   async login(dto: LoginDto) {
-    const user = await this.prisma.user.findUnique({
-      where: { email: dto.email },
-    });
-
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const isPasswordValid = await bcrypt.compare(dto.password, user.password);
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const payload = { sub: user.id, email: user.email, role: user.role };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    // TODO Auth: 1.4 - Implement User Login
+    // 1. Find user by email
+    // 2. Compare password with bcrypt
+    // 3. Generate and return a JWT access_token
+    return { access_token: 'TODO' };
   }
 }

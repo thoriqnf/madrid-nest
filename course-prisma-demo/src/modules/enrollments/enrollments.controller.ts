@@ -16,7 +16,7 @@ import { Public } from '../../auth/decorators/public.decorator';
 export class EnrollmentsController {
   constructor(private readonly enrollmentsService: EnrollmentsService) {}
 
-  @Public()
+  // TODO Auth: 4.3 - Mark as @Public()
   @Get()
   findAll(
     @Query('userId') userId?: string,
@@ -28,7 +28,7 @@ export class EnrollmentsController {
     );
   }
 
-  @Public()
+  // TODO Auth: 4.3 - Mark as @Public()
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.enrollmentsService.findOne(id);

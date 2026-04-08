@@ -1,4 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
 
 export const IS_PUBLIC_KEY = 'isPublic';
-export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
+// TODO Auth: 1.5 - Create Public Decorator using SetMetadata
+export const Public = () => (...args: any[]) => {};

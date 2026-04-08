@@ -16,7 +16,7 @@ import { Public } from '../../auth/decorators/public.decorator';
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
-  @Public()
+  // TODO Auth: 4.2 - Mark as @Public()
   @Get()
   findAll(
     @Query('search') search?: string,
@@ -27,7 +27,7 @@ export class CoursesController {
     return this.coursesService.findAll(search, isPublished);
   }
 
-  @Public()
+  // TODO Auth: 4.2 - Mark as @Public()
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.coursesService.findOne(id);
