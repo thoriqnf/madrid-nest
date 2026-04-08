@@ -9,16 +9,19 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { EnrollmentsService } from './enrollments.service';
+import { Public } from '../../auth/decorators/public.decorator';
 
 @Controller('enrollments')
 export class EnrollmentsController {
   constructor(private readonly enrollmentsService: EnrollmentsService) {}
 
+  @Public()
   @Get()
   findAll() {
     return this.enrollmentsService.findAll();
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.enrollmentsService.findOne(id);
@@ -34,7 +37,7 @@ export class EnrollmentsController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: { progress: number },
   ) {
-    return this.enrollmentsService.updateProgress(id, data);
+    return this.enrollmentsService.updateProgress(id, data.progress);
   }
 
   @Delete(':id')

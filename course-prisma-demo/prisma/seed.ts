@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
+import * as bcrypt from 'bcrypt';
 
 const connectionString = `${process.env.DATABASE_URL}`;
 const pool = new Pool({ connectionString });
@@ -9,24 +10,70 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log('🌱 Seeding CourseHub database...\n');
+  const passwordHash = await bcrypt.hash('password123', 10);
 
-  // TODO Relation 2.1: Seed Users and utilize nested writes for Profiles.
   console.log('👤 Creating users with profiles...');
-  /*
-  const alice = await prisma.user.upsert({ ... });
-  */
+  const alice = await prisma.user.upsert({
+    where: { email: 'alice@coursehub.com' },
+    update: {},
+    create: {
+      email: 'alice@coursehub.com',
+      name: 'Alice Admin',
+      password: passwordHash,
+      role: 'ADMIN',
+      profile: {
+        create: { bio: 'System Administrator', phone: '+123456789' }
+      }
+    },
+  });
 
-  // TODO Relation 2.2: Seed Courses and utilize nested `createMany` for Lessons.
+  const bob = await prisma.user.upsert({
+    where: { email: 'bob@coursehub.com' },
+    update: {},
+    create: {
+      email: 'bob@coursehub.com',
+      name: 'Bob Student',
+      password: passwordHash,
+      role: 'USER',
+      profile: {
+        create: { bio: 'Enthusiastic Learner' }
+      }
+    },
+  });
+
   console.log('📚 Creating courses with lessons...');
-  /*
-  const nestjsCourse = await prisma.course.create({ ... });
-  */
+  const nestjsCourse = await prisma.course.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      title: 'NestJS Zero to Hero',
+      description: 'Master backend development with NestJS.',
+      published: true,
+      author: { connect: { id: alice.id } },
+      lessons: {
+        create: [
+          { title: 'Introduction to Controllers', order: 1 },
+          { title: 'Providers and DI', order: 2 }
+        ]
+      }
+    }
+  });
 
-  // TODO Relation 2.3: Seed Enrollments (Explicit M2M).
   console.log('🎓 Creating enrollments...');
-  /*
-  await prisma.enrollment.createMany({ ... });
-  */
+  await prisma.enrollment.upsert({
+    where: {
+      userId_courseId: {
+        userId: bob.id,
+        courseId: nestjsCourse.id
+      }
+    },
+    update: {},
+    create: {
+      user: { connect: { id: bob.id } },
+      course: { connect: { id: nestjsCourse.id } },
+      progress: 50
+    }
+  });
 
   console.log('\n✅ Seeding completed successfully!');
 }
