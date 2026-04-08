@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { EnrollmentsService } from './enrollments.service';
 import { Public } from '../../auth/decorators/public.decorator';
@@ -17,8 +18,14 @@ export class EnrollmentsController {
 
   @Public()
   @Get()
-  findAll() {
-    return this.enrollmentsService.findAll();
+  findAll(
+    @Query('userId') userId?: string,
+    @Query('courseId') courseId?: string,
+  ) {
+    return this.enrollmentsService.findAll(
+      userId ? +userId : undefined,
+      courseId ? +courseId : undefined,
+    );
   }
 
   @Public()

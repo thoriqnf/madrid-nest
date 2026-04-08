@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Public } from '../../auth/decorators/public.decorator';
@@ -18,8 +19,8 @@ export class UsersController {
 
   @Public()
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query('search') search?: string) {
+    return this.usersService.findAll(search);
   }
 
   @Public()

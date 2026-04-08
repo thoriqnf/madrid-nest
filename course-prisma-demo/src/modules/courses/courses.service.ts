@@ -5,13 +5,50 @@ import { PrismaService } from '../../prisma/prisma.service';
 export class CoursesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll() {
-    // TODO Relation 4.2: Use `_count` to fetch total enrollments for a course, alongside including the author.
-    return "Returns all courses";
+  async findAll(search?: string, published?: boolean) {
+    return this.prisma.course.findMany({
+      where: {
+        AND: [
+          search ? { title: { contains: search, mode: 'insensitive' } } : {},
+          published !== undefined ? { published } : {},
+        ],
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          },
+        },
+        _count: {
+          select: { enrollments: true, lessons: true },
+        },
+      },
+    });
   }
 
   async findOne(id: number) {
-    return `Returns course #${id} with its enrollments.`;
+    const course = await this.prisma.course.findUnique({
+      where: { id },
+      include: {
+        author: true,
+        lessons: {
+          orderBy: { order: 'asc' },
+        },
+        enrollments: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+
+    if (!course) {
+      throw new NotFoundException(`Course with ID ${id} not found`);
+    }
+
+    return course;
   }
 
   async create(data: {
@@ -21,8 +58,25 @@ export class CoursesService {
     authorId: number;
     lessons?: { title: string; content?: string; order: number }[];
   }) {
-    // TODO Relation 4.1: Update `create` to perform a nested `createMany` (lessons) and a nested `connect` (author).
-    return "Creates a new course";
+    const { lessons, authorId, ...courseData } = data;
+
+    return this.prisma.course.create({
+      data: {
+        ...courseData,
+        author: {
+          connect: { id: authorId },
+        },
+        lessons: lessons
+          ? {
+              create: lessons,
+            }
+          : undefined,
+      },
+      include: {
+        author: true,
+        lessons: true,
+      },
+    });
   }
 
   async update(
@@ -33,10 +87,15 @@ export class CoursesService {
       published?: boolean;
     },
   ) {
-    return "Updates course";
+    return this.prisma.course.update({
+      where: { id },
+      data,
+    });
   }
 
   async remove(id: number) {
-    return `Deletes course #${id}`;
+    return this.prisma.course.delete({
+      where: { id },
+    });
   }
 }

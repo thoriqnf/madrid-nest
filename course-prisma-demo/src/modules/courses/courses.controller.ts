@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { Public } from '../../auth/decorators/public.decorator';
@@ -17,8 +18,13 @@ export class CoursesController {
 
   @Public()
   @Get()
-  findAll() {
-    return this.coursesService.findAll();
+  findAll(
+    @Query('search') search?: string,
+    @Query('published') published?: string,
+  ) {
+    const isPublished =
+      published === 'true' ? true : published === 'false' ? false : undefined;
+    return this.coursesService.findAll(search, isPublished);
   }
 
   @Public()
