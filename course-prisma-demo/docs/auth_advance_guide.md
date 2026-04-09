@@ -6,29 +6,31 @@ This guide explains the extra layers of protection we've added to CourseHub. We 
 
 ## Step-by-Step Implementation
 
-### Step 1: Saving Security Keys in the Database
-* **Checkpoint 1.1** - We added `hashedRefreshToken` to the User model in `schema.prisma`. This acts like a digital "session key" that we store so we can remember who is logged in and kick them out (logout) if needed.
-* **Checkpoint 1.2** - **Terminal Commands**: We ran `prisma db push` to update the database and `prisma generate` to update our code so it recognizes this new "session key" field.
+### Step 1: Security Setup & Database
+* **Todo Adv Auth: 1.1** - `course-prisma-demo/package.json`: Added security dependencies (`helmet`, `@nestjs/throttler`) to protect against common web attacks and brute-force attempts.
+* **Todo Adv Auth: 1.2** - `course-prisma-demo/prisma/schema.prisma`: Added `hashedRefreshToken` to the User model. This acts like a digital "session key" that we store so we can remember who is logged in and invalidate sessions remotely.
+* **Todo Adv Auth: 1.3** - **Terminal Commands**: Run `npx prisma db push` to update the database schema and `npx prisma generate` to sync our TypeScript types.
 
-### Step 2: Strengthening Our Forms (Validation)
-* **Checkpoint 2.1** - In `register.dto.ts`, we added rules to the registration form. Now, the email cannot be empty, and the password must be at least 6 characters long.
-* **Checkpoint 2.2** - In `login.dto.ts`, we made sure the login form also requires an email and password - no empty submissions allowed!
-* **Checkpoint 2.3** - In `auth.service.ts`, we added comments to explain **Password Hashing**. Think of hashing as "scrambling" a password so even if someone steals our database, they can't read the real passwords.
+### Step 2: Validation & Hashing
+* **Todo Adv Auth: 2.1** - `src/auth/dto/register.dto.ts`: Added validation decorators (`@IsEmail`, `@IsNotEmpty`, `@MinLength`). Now, registration requires a valid email and a password of at least 6 characters.
+* **Todo Adv Auth: 2.2** - `src/auth/dto/login.dto.ts`: Added similar validation rules for the login form to ensure no empty or malformed submissions reach our logic.
+* **Todo Adv Auth: 2.3** - `src/auth/auth.service.ts`: Implemented password hashing using `bcrypt`. Hashing "scrambles" passwords so they remain secure even if the database is compromised.
 
-### Step 3: Setting Up "Token Rotation" (The key swap)
-* **Checkpoint 3.1** - We created a strategy in `rt.strategy.ts` to handle **Refresh Tokens**. These are long-term keys that let users stay logged in without typing their password every 15 minutes.
-* **Checkpoint 3.2** - In `refresh-auth.guard.ts`, we created a "Security Guard" specifically for the refresh process.
-* **Checkpoint 3.3** - In `auth.service.ts`, we wrote the logic to give users a **brand new pair of keys** (Access and Refresh) every time they refresh. This "rotation" makes it much harder for hackers to reuse old stolen keys.
-* **Checkpoint 3.4** - We added a dedicated route (`/auth/refresh`) for this key swap in `auth.controller.ts`.
-* **Checkpoint 3.5** - In `auth.module.ts`, we told NestJS to use all these new security tools.
+### Step 3: Token Rotation implementation
+* **Todo Adv Auth: 3.1** - `src/auth/strategies/rt.strategy.ts`: Created a new strategy specifically for handling **Refresh Tokens**, which are long-term keys that keep users logged in safely.
+* **Todo Adv Auth: 3.2** - `src/auth/guards/refresh-auth.guard.ts`: Created a dedicated "Security Guard" to protect the refresh process and ensure only valid long-term keys can request new access.
+* **Todo Adv Auth: 3.3** - `src/auth/auth.service.ts`: Implemented `getTokens` and `updateRefreshToken` helpers to manage the generation and storage of dual-token pairs (Access & Refresh).
+* **Todo Adv Auth: 3.4** - `src/auth/auth.service.ts`: Added the `refreshTokens` logic. This implements **Token Rotation**: every time a user refreshes, they get a *brand new* pair of tokens, and the old ones are invalidated.
+* **Todo Adv Auth: 3.5** - `src/auth/auth.controller.ts`: Added the `/auth/refresh` endpoint to handle token swap requests from the frontend.
+* **Todo Adv Auth: 3.6** - `src/auth/auth.module.ts`: Registered the `RtStrategy` and `RefreshAuthGuard` so NestJS knows how to use our new security tools.
 
-### Step 4: Secure Logout (Cleaning Up)
-* **Checkpoint 4.1** - In `auth.service.ts`, we added a way to "forget" the Refresh Token in the database. When a user logs out, their long-term key is destroyed so nobody can use it again.
-* **Checkpoint 4.2** - In `auth.controller.ts`, we added the `/auth/logout` route for users to click.
+### Step 4: Secure Logout
+* **Todo Adv Auth: 4.1** - `src/auth/auth.service.ts`: Implemented the `logout` method to clear the `hashedRefreshToken` in the database, effectively "forgetting" the user's session.
+* **Todo Adv Auth: 4.2** - `src/auth/auth.controller.ts`: Added the `/auth/logout` route so users can securely end their sessions.
 
-### Step 5: Global Safety Shields
-* **Checkpoint 5.1** - In `app.module.ts`, we installed a **Rate Limiter**. This is like a guard at the door who only allows someone to try logging in 10 times per minute. This stops "Brute Force" attacks where a computer tries thousands of passwords.
-* **Checkpoint 5.2** - In `main.ts`, we added **Helmet**. This automatically sets up invisible security headers that protect your website from common browser-based attacks.
+### Step 5: Global Protection
+* **Todo Adv Auth: 5.1** - `src/app.module.ts`: Configured the `ThrottlerModule`. This acts like a guard who only allows 10 login attempts per minute, stopping "Brute Force" machine attacks.
+* **Todo Adv Auth: 5.2** - `src/main.ts`: Enabled **Helmet** for secure HTTP headers and applied the **ValidationPipe** globally to automatically enforce our DTO rules across the entire app.
 
 ---
 
