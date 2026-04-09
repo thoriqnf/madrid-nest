@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ConfigService } from '@nestjs/config';
-import * as bcrypt from 'bcrypt';
+// import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -21,9 +21,7 @@ export class AuthService {
 
   /**
    * TODO ADV AUTH: 2.3 - Password Hashing Highlight
-   * We use bcrypt.hash with 10 salt rounds. 
-   * Salt rounds determine the computational cost of hashing.
-   * Increasing this over time keeps the system secure against hardware advancements.
+   * Reverted to plain text for demo starter
    */
   async register(dto: RegisterDto) {
     const existingUser = await this.prisma.user.findUnique({
@@ -34,23 +32,26 @@ export class AuthService {
       throw new ConflictException('Email already in use');
     }
 
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
-
+    // TODO ADV AUTH: 2.3 - Implement Hashing here
     const user = await this.prisma.user.create({
       data: {
         email: dto.email,
         name: dto.name,
-        password: hashedPassword,
+        password: dto.password, // Plain text for now
       },
     });
 
-    const tokens = await this.getTokens(user.id, user.email, user.role);
-    await this.updateRefreshToken(user.id, tokens.refresh_token);
-    return tokens;
+    // TODO ADV AUTH: 3.3 - Return dual tokens instead of just one
+    const payload = { sub: user.id, email: user.email, role: user.role };
+    const token = await this.jwtService.signAsync(payload);
+    
+    return {
+      access_token: token,
+    };
   }
 
   /**
-   * Login logic with Token Rotation
+   * Login logic 
    */
   async login(dto: LoginDto) {
     const user = await this.prisma.user.findUnique({
@@ -61,79 +62,48 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isPasswordValid = await bcrypt.compare(dto.password, user.password);
+    // TODO ADV AUTH: 2.3 - Implement Bcrypt comparison here
+    const isPasswordValid = dto.password === user.password; 
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const tokens = await this.getTokens(user.id, user.email, user.role);
-    await this.updateRefreshToken(user.id, tokens.refresh_token);
-    return tokens;
-  }
-
-  /**
-   * TODO ADV AUTH: 4.1 - Logout logic: Clearing the stored refresh token to invalidate the session
-   */
-  async logout(userId: number) {
-    await this.prisma.user.updateMany({
-      where: {
-        id: userId,
-        hashedRefreshToken: { not: null },
-      },
-      data: {
-        hashedRefreshToken: null,
-      },
-    });
+    // TODO ADV AUTH: 3.3 - Return dual tokens 
+    const payload = { sub: user.id, email: user.email, role: user.role };
+    const token = await this.jwtService.signAsync(payload);
 
     return {
-      message: 'Successfully logged out',
+      access_token: token,
     };
   }
 
   /**
-   * TODO ADV AUTH: 3.4 - Refresh Token logic: Validates RT and issues a new pair (Rotation)
+   * TODO ADV AUTH: 4.1 - Logout logic
+   */
+  async logout(userId: number) {
+    // TODO: Clear refreshing token from DB
+    return {
+      message: 'Logged out (Placeholder)',
+    };
+  }
+
+  /**
+   * TODO ADV AUTH: 3.4 - Refresh Token logic
    */
   async refreshTokens(userId: number, rt: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user || !user.hashedRefreshToken) {
-      throw new ForbiddenException('Access Denied');
-    }
-
-    const rtMatches = await bcrypt.compare(rt, user.hashedRefreshToken);
-    if (!rtMatches) {
-      throw new ForbiddenException('Access Denied');
-    }
-
-    const tokens = await this.getTokens(user.id, user.email, user.role);
-    await this.updateRefreshToken(user.id, tokens.refresh_token);
-    return tokens;
+    // TODO: Implement token rotation logic
+    throw new ForbiddenException('Not Implemented');
   }
 
   /**
    * TODO ADV AUTH: 3.3 - Token generation helpers
-   * Utility: Generate pair of Access and Refresh tokens
    */
   async getTokens(userId: number, email: string, role: string) {
-    const payload = { sub: userId, email, role };
-
-    const [at, rt] = await Promise.all([
-      this.jwtService.signAsync(payload, {
-        secret: this.config.get<string>('JWT_SECRET'),
-        expiresIn: '15m',
-      }),
-      this.jwtService.signAsync(payload, {
-        secret: this.config.get<string>('JWT_REFRESH_SECRET', 'refresh-secret'),
-        expiresIn: '7d',
-      }),
-    ]);
-
+    // TODO: Implement dual token generation
     return {
-      access_token: at,
-      refresh_token: rt,
+      access_token: '',
+      refresh_token: '',
     };
   }
 
@@ -141,10 +111,6 @@ export class AuthService {
    * Utility: Store hashed refresh token in DB
    */
   async updateRefreshToken(userId: number, rt: string) {
-    const hash = await bcrypt.hash(rt, 10);
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: { hashedRefreshToken: hash },
-    });
+    // TODO: Implement RT storage 
   }
 }

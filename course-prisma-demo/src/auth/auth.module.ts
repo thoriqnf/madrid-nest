@@ -26,7 +26,7 @@ import { RtStrategy } from './strategies/rt.strategy';
   providers: [
     AuthService, 
     JwtStrategy, 
-    RtStrategy, // TODO ADV AUTH: 3.6 - Security providers
+    // RtStrategy, // TODO ADV AUTH: 3.6 - Security providers
   ],
   exports: [AuthService],
 })

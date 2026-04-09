@@ -15,10 +15,13 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    ThrottlerModule.forRoot([{ // TODO ADV AUTH: 5.1 - Rate Limiting
-      ttl: 60000,
-      limit: 10,
-    }]),
+    /**
+     * TODO ADV AUTH: 5.1 - Rate Limiting
+     * ThrottlerModule.forRoot([{
+     *   ttl: 60000,
+     *   limit: 10,
+     * }]),
+     */
     PrismaModule,
     UsersModule,
     CoursesModule,
@@ -28,10 +31,13 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
   controllers: [AppController],
   providers: [
     AppService,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    /**
+     * TODO ADV AUTH: 5.1 - Rate Limiting Guard
+     * {
+     *   provide: APP_GUARD,
+     *   useClass: ThrottlerGuard,
+     * },
+     */
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

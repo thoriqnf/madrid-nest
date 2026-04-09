@@ -6,8 +6,11 @@ import helmet from 'helmet';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api/v1');
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true })); // TODO ADV AUTH: 5.2 - Global Validation
-  app.use(helmet()); // TODO ADV AUTH: 5.2 - Security Headers
+  
+  // TODO ADV AUTH: 5.2 - Global Validation & Security Headers
+  // app.useGlobalPipes(new ValidationPipe({ whitelist: true })); 
+  // app.use(helmet()); 
+
   await app.listen(process.env.PORT ?? 9000);
 }
 bootstrap();

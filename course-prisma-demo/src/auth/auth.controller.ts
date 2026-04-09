@@ -28,21 +28,23 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   logout(@Request() req: any) {
-    const userId = req.user.sub ?? req.user.userId;
-    return this.authService.logout(userId);
+    // const userId = req.user.sub ?? req.user.userId;
+    // return this.authService.logout(userId);
+    return { message: 'Logout path' };
   }
 
   /**
    * TODO ADV AUTH: 3.5 - Refresh endpoint
+   * TODO: Add @UseGuards(RefreshAuthGuard) here
    */
-  @Public() // Public because we use a specific RefreshAuthGuard
-  @UseGuards(RefreshAuthGuard)
+  @Public() 
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   refreshTokens(@Request() req: any) {
-    const userId = req.user.sub;
-    const rt = req.user.refreshToken;
-    return this.authService.refreshTokens(userId, rt);
+    // const userId = req.user.sub;
+    // const rt = req.user.refreshToken;
+    // return this.authService.refreshTokens(userId, rt);
+    return { message: 'Refresh path' };
   }
 
   @Get('profile')
