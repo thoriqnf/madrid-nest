@@ -20,7 +20,7 @@ export class AuthService {
   ) {}
 
   /**
-   * TODO ADV AUTH: 1.1 - Password Hashing Highlight
+   * TODO ADV AUTH: 2.3 - Password Hashing Highlight
    * We use bcrypt.hash with 10 salt rounds. 
    * Salt rounds determine the computational cost of hashing.
    * Increasing this over time keeps the system secure against hardware advancements.
@@ -73,7 +73,7 @@ export class AuthService {
   }
 
   /**
-   * Logout logic: Clearing the stored refresh token to invalidate the session
+   * TODO ADV AUTH: 4.1 - Logout logic: Clearing the stored refresh token to invalidate the session
    */
   async logout(userId: number) {
     await this.prisma.user.updateMany({
@@ -92,7 +92,7 @@ export class AuthService {
   }
 
   /**
-   * Refresh Token logic: Validates RT and issues a new pair (Rotation)
+   * TODO ADV AUTH: 3.4 - Refresh Token logic: Validates RT and issues a new pair (Rotation)
    */
   async refreshTokens(userId: number, rt: string) {
     const user = await this.prisma.user.findUnique({
@@ -114,6 +114,7 @@ export class AuthService {
   }
 
   /**
+   * TODO ADV AUTH: 3.3 - Token generation helpers
    * Utility: Generate pair of Access and Refresh tokens
    */
   async getTokens(userId: number, email: string, role: string) {

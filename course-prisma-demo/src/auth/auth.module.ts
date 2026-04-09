@@ -23,7 +23,11 @@ import { RtStrategy } from './strategies/rt.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, RtStrategy],
+  providers: [
+    AuthService, 
+    JwtStrategy, 
+    RtStrategy, // TODO ADV AUTH: 3.6 - Security providers
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

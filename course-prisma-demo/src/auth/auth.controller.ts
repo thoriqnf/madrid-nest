@@ -22,6 +22,9 @@ export class AuthController {
     return this.authService.login(dto);
   }
 
+  /**
+   * TODO ADV AUTH: 4.2 - Logout endpoint
+   */
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   logout(@Request() req: any) {
@@ -29,6 +32,9 @@ export class AuthController {
     return this.authService.logout(userId);
   }
 
+  /**
+   * TODO ADV AUTH: 3.5 - Refresh endpoint
+   */
   @Public() // Public because we use a specific RefreshAuthGuard
   @UseGuards(RefreshAuthGuard)
   @Post('refresh')

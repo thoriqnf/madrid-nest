@@ -15,7 +15,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    ThrottlerModule.forRoot([{
+    ThrottlerModule.forRoot([{ // TODO ADV AUTH: 5.1 - Rate Limiting
       ttl: 60000,
       limit: 10,
     }]),
