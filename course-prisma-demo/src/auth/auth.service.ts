@@ -85,6 +85,10 @@ export class AuthService {
         hashedRefreshToken: null,
       },
     });
+
+    return {
+      message: 'Successfully logged out',
+    };
   }
 
   /**
