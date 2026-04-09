@@ -1,8 +1,9 @@
-import { Controller, Post, Body, Get, Request } from '@nestjs/common';
+import { Controller, Post, Body, Get, Request, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { Public } from './decorators/public.decorator';
+import { RefreshAuthGuard } from './guards/refresh-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -16,8 +17,26 @@ export class AuthController {
 
   @Public()
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  logout(@Request() req: any) {
+    const userId = req.user.sub ?? req.user.userId;
+    return this.authService.logout(userId);
+  }
+
+  @Public() // Public because we use a specific RefreshAuthGuard
+  @UseGuards(RefreshAuthGuard)
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  refreshTokens(@Request() req: any) {
+    const userId = req.user.sub;
+    const rt = req.user.refreshToken;
+    return this.authService.refreshTokens(userId, rt);
   }
 
   @Get('profile')

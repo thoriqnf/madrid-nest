@@ -25,6 +25,7 @@ model User {
   role      Role     @default(USER)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  hashedRefreshToken String? @map("hashed_refresh_token")
 
   // Relation 1.1: Add 1-to-1 relationship with the Profile model
   profile   Profile?
