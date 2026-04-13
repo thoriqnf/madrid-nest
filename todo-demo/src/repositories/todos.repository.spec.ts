@@ -6,14 +6,14 @@ describe('TodosRepository', () => {
   let repository: TodosRepository;
   let prisma: PrismaService;
 
-  // // TODO Testing: 2.0 Mock Pattern
+  // // TODO Testing: 2.2 Mock Pattern
   const mockTodo = {
     id: 1,
     title: 'Test Todo',
     userId: 1,
   };
 
-  // // TODO Testing: 2.1 Mock Implementation
+  // // TODO Testing: 2.3 Mock Implementation
   const mockPrismaService = {
     todo: {
       create: jest.fn().mockResolvedValue(mockTodo),
@@ -25,7 +25,7 @@ describe('TodosRepository', () => {
   };
 
   beforeEach(async () => {
-    // // TODO Testing: 1.0 Dependency Injection
+    // // TODO Testing: 1.2 Dependency Injection
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TodosRepository,
@@ -44,9 +44,9 @@ describe('TodosRepository', () => {
     expect(repository).toBeDefined();
   });
 
-  // // TODO Testing: 3.0 Async/Await
+  // // TODO Testing: 3.2 Async/Await
   it('should call prisma.todo.create', async () => {
-    // // TODO Testing: 5.0 Business Logic / Repository Logic
+    // // TODO Testing: 5.2 Business Logic / Repository Logic
     const data = { title: 'Test Todo', user: { connect: { id: 1 } } };
     await repository.create(data);
     expect(prisma.todo.create).toHaveBeenCalledWith({ data });

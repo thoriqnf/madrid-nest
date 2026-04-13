@@ -6,7 +6,7 @@ describe('UsersRepository', () => {
   let repository: UsersRepository;
   let prisma: PrismaService;
 
-  // // TODO Testing: 2.0 Mock Pattern
+  // // TODO Testing: 2.1 Mock Pattern
   const mockUser = {
     id: 1,
     email: 'test@example.com',
@@ -23,7 +23,7 @@ describe('UsersRepository', () => {
   };
 
   beforeEach(async () => {
-    // // TODO Testing: 1.0 Dependency Injection
+    // // TODO Testing: 1.1 Dependency Injection
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersRepository,
@@ -42,9 +42,9 @@ describe('UsersRepository', () => {
     expect(repository).toBeDefined();
   });
 
-  // // TODO Testing: 3.0 Async/Await
+  // // TODO Testing: 3.1 Async/Await
   it('should find a user by email', async () => {
-    // // TODO Testing: 5.0 Business Logic / Repository Logic
+    // // TODO Testing: 5.1 Business Logic / Repository Logic
     const email = 'test@example.com';
     const result = await repository.findUnique({ email });
     expect(result).toEqual(mockUser);

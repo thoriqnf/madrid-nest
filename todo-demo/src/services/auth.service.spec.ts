@@ -9,7 +9,7 @@ describe('AuthService', () => {
   let service: AuthService;
   let usersService: UsersService;
 
-  // // TODO Testing: 2.0 Mock Pattern
+  // // TODO Testing: 2.5 Mock Pattern
   const mockUsersService = {
     findByEmail: jest.fn(),
     create: jest.fn(),
@@ -29,7 +29,7 @@ describe('AuthService', () => {
   };
 
   beforeEach(async () => {
-    // // TODO Testing: 1.0 Dependency Injection
+    // // TODO Testing: 1.4 Dependency Injection
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
@@ -47,10 +47,10 @@ describe('AuthService', () => {
     expect(service).toBeDefined();
   });
 
-  // // TODO Testing: 3.0 Async/Await
+  // // TODO Testing: 3.4 Async/Await
   describe('signup', () => {
     it('should throw ConflictException if user exists', async () => {
-      // // TODO Testing: 4.0 Error Handling
+      // // TODO Testing: 4.1 Error Handling
       mockUsersService.findByEmail.mockResolvedValue({ id: 1 });
       const dto = { email: 'test@test.com', password: 'password', name: 'Test' };
 
@@ -58,7 +58,7 @@ describe('AuthService', () => {
     });
 
     it('should create a new user and return tokens', async () => {
-      // // TODO Testing: 5.0 Business Logic
+      // // TODO Testing: 5.4 Business Logic
       mockUsersService.findByEmail.mockResolvedValue(null);
       mockUsersService.create.mockResolvedValue({ id: 1, email: 'test@test.com' });
 

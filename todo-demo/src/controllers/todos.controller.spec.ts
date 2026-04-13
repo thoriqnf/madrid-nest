@@ -6,7 +6,7 @@ describe('TodosController', () => {
   let controller: TodosController;
   let service: TodosService;
 
-  // // TODO Testing: 2.0 Mock Pattern
+  // // TODO Testing: 2.8 Mock Pattern
   const mockTodo = {
     id: 1,
     title: 'Test Todo',
@@ -22,7 +22,7 @@ describe('TodosController', () => {
   };
 
   beforeEach(async () => {
-    // // TODO Testing: 1.0 Dependency Injection
+    // // TODO Testing: 1.7 Dependency Injection
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TodosController],
       providers: [
@@ -41,10 +41,10 @@ describe('TodosController', () => {
     expect(controller).toBeDefined();
   });
 
-  // // TODO Testing: 3.0 Async/Await
+  // // TODO Testing: 3.7 Async/Await
   describe('create', () => {
     it('should create a todo', async () => {
-      // // TODO Testing: 5.0 Business Logic / Controller logic
+      // // TODO Testing: 5.7 Business Logic / Controller logic
       const result = await controller.create(1, 'Test Todo', 'Description');
       expect(result).toEqual(mockTodo);
       expect(service.create).toHaveBeenCalledWith(1, 'Test Todo', 'Description');
