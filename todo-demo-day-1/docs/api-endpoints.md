@@ -1,6 +1,6 @@
 # 🌍 Todo App API Endpoints
 
-**Base URL:** `http://localhost:3000`
+**Base URL:** `http://localhost:8000`
 
 > [!IMPORTANT]
 > **Authentication Note:** Most endpoints require a Bearer Token in the `Authorization` header.
