@@ -8,33 +8,21 @@ describe('TodosService', () => {
   let repository: TodosRepository;
 
   // TODO Testing: 2.6 Mock Pattern
-  const mockTodo = {
-    id: 1,
-    title: 'Test Todo',
-    description: 'Test Description',
-    completed: false,
-    userId: 1,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
+  const mockTodo = {};
 
   const mockRepository = {
-    create: jest.fn().mockResolvedValue(mockTodo),
-    findAll: jest.fn().mockResolvedValue([mockTodo]),
-    findUnique: jest.fn().mockResolvedValue(mockTodo),
-    update: jest.fn().mockResolvedValue({ ...mockTodo, completed: true }),
-    delete: jest.fn().mockResolvedValue(mockTodo),
+    create: jest.fn(),
+    findAll: jest.fn(),
+    findUnique: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
   };
 
   beforeEach(async () => {
     // TODO Testing: 1.5 Dependency Injection
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        TodosService,
-        {
-          provide: TodosRepository,
-          useValue: mockRepository,
-        },
+        // TODO: Register TodosService and TodosRepository mock
       ],
     }).compile();
 
@@ -50,27 +38,20 @@ describe('TodosService', () => {
   describe('create', () => {
     it('should create a todo', async () => {
       // TODO Testing: 5.5 Business Logic
-      const result = await service.create(1, 'Test Todo', 'Test Description');
-      expect(result).toEqual(mockTodo);
-      expect(repository.create).toHaveBeenCalled();
     });
   });
 
   describe('findOne', () => {
     it('should return a todo if it exists and belongs to the user', async () => {
-      const result = await service.findOne(1, 1);
-      expect(result).toEqual(mockTodo);
+      // Fill implementation here
     });
 
     it('should throw NotFoundException if todo does not exist', async () => {
       // TODO Testing: 4.2 Error Handling
-      mockRepository.findUnique.mockResolvedValueOnce(null);
-      await expect(service.findOne(1, 1)).rejects.toThrow(NotFoundException);
     });
 
     it('should throw ForbiddenException if todo does not belong to the user', async () => {
-      mockRepository.findUnique.mockResolvedValueOnce({ ...mockTodo, userId: 2 });
-      await expect(service.findOne(1, 1)).rejects.toThrow(ForbiddenException);
+      // Fill implementation here
     });
   });
 });

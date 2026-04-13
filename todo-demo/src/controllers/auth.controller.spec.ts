@@ -8,27 +8,21 @@ describe('AuthController', () => {
   let service: AuthService;
 
   // TODO Testing: 2.7 Mock Pattern
-  const mockTokens = {
-    access_token: 'at',
-    refresh_token: 'rt',
-  };
+  const mockTokens = {};
 
   const mockAuthService = {
-    signup: jest.fn().mockResolvedValue(mockTokens),
-    signin: jest.fn().mockResolvedValue(mockTokens),
-    logout: jest.fn().mockResolvedValue(true),
-    refreshTokens: jest.fn().mockResolvedValue(mockTokens),
+    signup: jest.fn(),
+    signin: jest.fn(),
+    logout: jest.fn(),
+    refreshTokens: jest.fn(),
   };
 
   beforeEach(async () => {
     // TODO Testing: 1.6 Dependency Injection
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [AuthController],
+      controllers: [], // TODO: Register AuthController
       providers: [
-        {
-          provide: AuthService,
-          useValue: mockAuthService,
-        },
+        // TODO: Register AuthService mock
       ],
     }).compile();
 
@@ -44,21 +38,12 @@ describe('AuthController', () => {
   describe('signup', () => {
     it('should call signup and return tokens', async () => {
       // TODO Testing: 5.6 Business Logic / Controller logic
-      const dto = { email: 'test@test.com', password: 'password', name: 'Test' };
-      const result = await controller.signup(dto);
-
-      expect(result).toEqual(mockTokens);
-      expect(service.signup).toHaveBeenCalledWith(dto);
     });
   });
 
   describe('signin', () => {
     it('should call signin and return tokens', async () => {
-      const dto = { email: 'test@test.com', password: 'password' };
-      const result = await controller.signin(dto);
-
-      expect(result).toEqual(mockTokens);
-      expect(service.signin).toHaveBeenCalledWith(dto);
+      // Fill implementation here
     });
   });
 });

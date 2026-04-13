@@ -7,20 +7,16 @@ describe('TodosRepository', () => {
   let prisma: PrismaService;
 
   // TODO Testing: 2.2 Mock Pattern
-  const mockTodo = {
-    id: 1,
-    title: 'Test Todo',
-    userId: 1,
-  };
+  const mockTodo = {};
 
   // TODO Testing: 2.3 Mock Implementation
   const mockPrismaService = {
     todo: {
-      create: jest.fn().mockResolvedValue(mockTodo),
-      findMany: jest.fn().mockResolvedValue([mockTodo]),
-      findUnique: jest.fn().mockResolvedValue(mockTodo),
-      update: jest.fn().mockResolvedValue(mockTodo),
-      delete: jest.fn().mockResolvedValue(mockTodo),
+      create: jest.fn(),
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
     },
   };
 
@@ -28,11 +24,7 @@ describe('TodosRepository', () => {
     // TODO Testing: 1.2 Dependency Injection
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        TodosRepository,
-        {
-          provide: PrismaService,
-          useValue: mockPrismaService,
-        },
+        // TODO: Register TodosRepository and PrismaService mock
       ],
     }).compile();
 
@@ -47,14 +39,9 @@ describe('TodosRepository', () => {
   // TODO Testing: 3.2 Async/Await
   it('should call prisma.todo.create', async () => {
     // TODO Testing: 5.2 Business Logic / Repository Logic
-    const data = { title: 'Test Todo', user: { connect: { id: 1 } } };
-    await repository.create(data);
-    expect(prisma.todo.create).toHaveBeenCalledWith({ data });
   });
 
   it('should call prisma.todo.findMany', async () => {
-    const where = { userId: 1 };
-    await repository.findAll(where);
-    expect(prisma.todo.findMany).toHaveBeenCalledWith({ where });
+    // Fill implementation here
   });
 });
