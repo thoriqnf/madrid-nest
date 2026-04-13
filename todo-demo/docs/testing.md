@@ -1,83 +1,110 @@
 # Testing Guide - Todo Demo Training
 
-This guide provides a systematic approach to implementing tests for the Todo Demo application. We follow a 5-step pattern to ensure consistency and robustness across Repositories, Services, and Controllers.
+This guide provides a granular, step-by-step implementation for the Todo Demo application. Follow the markers in the code sequentially to complete the testing suite.
+
+---
 
 ## 1.0 Dependency Injection (Setup)
 
-In NestJS, we use the `Test` utility to create a testing module. This allows us to inject **Mocks** instead of real implementations, isolating the class under test.
+We use `Test.createTestingModule` to set up a sandboxed environment for our classes.
 
-**Implementation Steps:**
-1. Use `Test.createTestingModule` to define the providers and controllers.
-2. Use `{ provide: ClassName, useValue: mockObject }` to swap real dependencies with mocks.
-3. Call `.compile()` and use `module.get<T>(ClassName)` to retrieve instance.
+### 1.1 - 1.2 Repository Setup
+- **Files**: `users.repository.spec.ts`, `todos.repository.spec.ts`
+- **Goal**: Inject the repository and a mocked `PrismaService`.
+- **Instruction**: Use the `providers` array to register the Repository and use `{ provide: PrismaService, useValue: mockPrismaService }`.
 
-> [!TIP]
-> Always retrieve both the class under test and its mocked dependencies from the testing module to ensure they are properly wired.
+### 1.3 - 1.5 Service Setup
+- **Files**: `users.service.spec.ts`, `auth.service.spec.ts`, `todos.service.spec.ts`
+- **Goal**: Inject the Service and its dependencies (Repository, JwtService, etc.).
+- **Instruction**: Ensure all dependencies are provided as mocks to prevent side effects.
+
+### 1.6 - 1.7 Controller Setup
+- **Files**: `auth.controller.spec.ts`, `todos.controller.spec.ts`
+- **Goal**: Inject the Controller and its corresponding Service mock.
+- **Instruction**: Controllers use the `controllers` array in the testing module.
 
 ---
 
 ## 2.0 Mock Pattern
 
-Mocks are objects that simulate the behavior of real dependencies. We use `jest.fn()` to create trackable mock functions.
+Mocks define the data and behavior returned by dependencies during tests.
 
-**Implementation Steps:**
-1. Define a `mockData` object (e.g., `mockUser`, `mockTodo`).
-2. Create a `mockService` or `mockRepository` object where each method is a `jest.fn()`.
-3. Use `.mockResolvedValue(data)` for success cases and `.mockImplementation()` for dynamic responses.
+### 2.1 - 2.3 Repository Mocks
+- **Action**: Define `mockUser` or `mockTodo` objects and a `mockPrismaService` that returns them via `jest.fn().mockResolvedValue()`.
+
+### 2.4 - 2.6 Service Mocks
+- **Action**: Define mock objects for the underlying repositories. Ensure all methods used in the service (e.g., `findUnique`, `create`) are mocked.
+
+### 2.7 - 2.8 Controller Mocks
+- **Action**: Define mock objects for the Services. For example, `mockAuthService` should simulate `signup` and `signin` returning tokens.
 
 ---
 
 ## 3.0 Async/Await
 
-Most backend operations (Database, Auth, Hashing) are asynchronous. Our tests must reflect this by using `async/await`.
+All database and auth logic in this app is asynchronous.
 
-**Implementation Steps:**
-1. Declare the test callback as `async () => { ... }`.
-2. Use `await` when calling service or repository methods.
-3. Use `await expect(...).rejects.toThrow()` when testing for errors.
+### 3.1 - 3.7 Async Implementation
+- **Goal**: Ensure the test runner waits for the result.
+- **Action**: Add the `async` keyword to the `it` or `describe` callback and use `await` before calling any method.
 
 ---
 
 ## 4.0 Error Handling
 
-Robust applications handle failure gracefully. We test edge cases like "Not Found", "Conflict", or "Unauthorized" exceptions.
+We must test that our code fails correctly when given bad data.
 
-**Implementation Steps:**
-1. Configure your mock to return a failure state (e.g., `mockResolvedValue(null)`).
-2. Use `expect(...).rejects.toThrow(ExceptionClass)` to verify the correct error is raised.
+### 4.1 Collision Test (Auth)
+- **File**: `auth.service.spec.ts`
+- **Action**: Force the `findByEmail` mock to return an existing user, then verify that `signup` throws a `ConflictException`.
+
+### 4.2 Not Found Test (Todos)
+- **File**: `todos.service.spec.ts`
+- **Action**: Force the `findUnique` mock to return `null`, then verify that `findOne` throws a `NotFoundException`.
 
 ---
 
 ## 5.0 Business Logic Implementation
 
-This is where you write the actual test cases to verify that the application logic works as expected.
+The final verification of the "Happy Path".
 
-**Common Assertions:**
-- `expect(result).toEqual(expected)`: Check return values.
-- `expect(mock.method).toHaveBeenCalledWith(...)`: Ensure dependencies are called with correct params.
-- `expect(result).toHaveProperty('key')`: Verify object structure.
+### 5.1 - 5.2 Repository Logic
+- **Action**: Call the repository method and `expect` that the underlying Prisma call was made with the correct parameters.
+
+### 5.3 - 5.5 Service Logic
+- **Action**: Verify that the service correctly interacts with the repository and returns the expected result.
+
+### 5.6 - 5.7 Controller Logic
+- **Action**: Verify that the controller returns the correct status code and data (e.g., tokens or todo objects) to the client.
 
 ---
 
-## Marker Map
+## Marker Checklist
 
-Follow the sequence of TODOs from 1.1 to 5.7 across the files:
-
-| Marker | Category | File | Description |
+| Step | Marker | File | What to do? |
 | :--- | :--- | :--- | :--- |
-| **1.1 - 1.2** | Dependency Injection | `*.repository.spec.ts` | Setup Repository tests |
-| **1.3 - 1.5** | Dependency Injection | `*.service.spec.ts` | Setup Service tests |
-| **1.6 - 1.7** | Dependency Injection | `*.controller.spec.ts` | Setup Controller tests |
-| **2.1 - 2.8** | Mock Pattern | All Spec Files | Define Mocks and Data |
-| **3.1 - 3.7** | Async/Await | All Spec Files | Async test structure |
-| **4.1 - 4.2** | Error Handling | `auth.service.spec.ts`, `todos.service.spec.ts` | Exceptions |
-| **5.1 - 5.7** | Business Logic | All Spec Files | Implementation of test cases |
-
----
-
-## Running the Demo
-
-1. **Setup**: `bun install`
-2. **Run Tests**: `bun test`
-3. **Watch Mode**: `bun test --watch`
-4. **Coverage**: `bun test --coverage`
+| 1 | **1.1** | `users.repository.spec.ts` | Setup `UsersRepository` DI |
+| 2 | **1.2** | `todos.repository.spec.ts` | Setup `TodosRepository` DI |
+| 3 | **1.3** | `users.service.spec.ts` | Setup `UsersService` DI |
+| 4 | **1.4** | `auth.service.spec.ts` | Setup `AuthService` DI |
+| 5 | **1.5** | `todos.service.spec.ts` | Setup `TodosService` DI |
+| 6 | **1.6** | `auth.controller.spec.ts` | Setup `AuthController` DI |
+| 7 | **1.7** | `todos.controller.spec.ts` | Setup `TodosController` DI |
+| 8 | **2.1** | `users.repository.spec.ts` | Create `mockUser` & `mockPrismaService` |
+| 9 | **2.2** | `todos.repository.spec.ts` | Create `mockTodo` |
+| 10 | **2.3** | `todos.repository.spec.ts` | Create `mockPrismaService` for Todos |
+| 11 | **2.4** | `users.service.spec.ts` | Create `mockRepository` |
+| 12 | **2.5** | `auth.service.spec.ts` | Create multiple Service mocks |
+| 13 | **2.6** | `todos.service.spec.ts` | Create `mockRepository` for Todos |
+| 14 | **2.7** | `auth.controller.spec.ts` | Create `mockAuthService` |
+| 15 | **2.8** | `todos.controller.spec.ts` | Create `mockTodosService` |
+| 16 | **3.x** | All Files | Wrap tests in `async/await` |
+| 17 | **4.1** | `auth.service.spec.ts` | Throw `ConflictException` if user exists |
+| 18 | **4.2** | `todos.service.spec.ts` | Throw `NotFoundException` if no todo |
+| 19 | **5.1** | `users.repository.spec.ts` | Assert `findUnique` logic |
+| 20 | **5.2** | `todos.repository.spec.ts` | Assert `create` logic |
+| 21 | **5.3** | `users.service.spec.ts` | Assert `findByEmail` logic |
+| 22 | **5.4** | `auth.service.spec.ts` | Assert `signup` logic |
+| 23 | **5.5** | `todos.service.spec.ts` | Assert `create` logic |
+| 24 | **5.6** | `auth.controller.spec.ts` | Assert `signup` returns tokens |
+| 25 | **5.7** | `todos.controller.spec.ts` | Assert `create` returns todo |
