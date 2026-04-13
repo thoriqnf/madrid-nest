@@ -7,7 +7,7 @@ describe('TodosService', () => {
   let service: TodosService;
   let repository: TodosRepository;
 
-  // // TODO Testing: 2.6 Mock Pattern
+  // TODO Testing: 2.6 Mock Pattern
   const mockTodo = {
     id: 1,
     title: 'Test Todo',
@@ -27,7 +27,7 @@ describe('TodosService', () => {
   };
 
   beforeEach(async () => {
-    // // TODO Testing: 1.5 Dependency Injection
+    // TODO Testing: 1.5 Dependency Injection
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TodosService,
@@ -46,10 +46,10 @@ describe('TodosService', () => {
     expect(service).toBeDefined();
   });
 
-  // // TODO Testing: 3.5 Async/Await
+  // TODO Testing: 3.5 Async/Await
   describe('create', () => {
     it('should create a todo', async () => {
-      // // TODO Testing: 5.5 Business Logic
+      // TODO Testing: 5.5 Business Logic
       const result = await service.create(1, 'Test Todo', 'Test Description');
       expect(result).toEqual(mockTodo);
       expect(repository.create).toHaveBeenCalled();
@@ -63,7 +63,7 @@ describe('TodosService', () => {
     });
 
     it('should throw NotFoundException if todo does not exist', async () => {
-      // // TODO Testing: 4.2 Error Handling
+      // TODO Testing: 4.2 Error Handling
       mockRepository.findUnique.mockResolvedValueOnce(null);
       await expect(service.findOne(1, 1)).rejects.toThrow(NotFoundException);
     });

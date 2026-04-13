@@ -6,7 +6,7 @@ describe('UsersService', () => {
   let service: UsersService;
   let repository: UsersRepository;
 
-  // // TODO Testing: 2.4 Mock Pattern
+  // TODO Testing: 2.4 Mock Pattern
   const mockUser = {
     id: 1,
     email: 'test@example.com',
@@ -20,7 +20,7 @@ describe('UsersService', () => {
   };
 
   beforeEach(async () => {
-    // // TODO Testing: 1.3 Dependency Injection
+    // TODO Testing: 1.3 Dependency Injection
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
@@ -39,9 +39,9 @@ describe('UsersService', () => {
     expect(service).toBeDefined();
   });
 
-  // // TODO Testing: 3.3 Async/Await
+  // TODO Testing: 3.3 Async/Await
   it('should find a user by email', async () => {
-    // // TODO Testing: 5.3 Business Logic
+    // TODO Testing: 5.3 Business Logic
     const email = 'test@example.com';
     const result = await service.findByEmail(email);
     expect(result).toEqual(mockUser);
