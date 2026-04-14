@@ -3,7 +3,14 @@ import { AuthService } from './auth.service';
 import { UsersService } from './users.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  UnauthorizedException,
+  ForbiddenException,
+} from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+
+jest.mock('bcrypt');
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -12,6 +19,7 @@ describe('AuthService', () => {
   // TODO Testing: 2.5 Mock Pattern
   const mockUsersService = {
     findByEmail: jest.fn(),
+    findById: jest.fn(),
     create: jest.fn(),
     updateHashedRefreshToken: jest.fn(),
   };
@@ -77,6 +85,49 @@ describe('AuthService', () => {
       const dto = { email: 'test@test.com', password: 'password' };
 
       await expect(service.signin(dto)).rejects.toThrow(UnauthorizedException);
+    });
+
+    // TODO ADV Testing: 1.1 Password Mismatch
+    it('should throw UnauthorizedException if password does not match', async () => {
+      mockUsersService.findByEmail.mockResolvedValue({
+        id: 1,
+        password: 'hashed-password',
+      });
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+      const dto = { email: 'test@test.com', password: 'wrong-password' };
+      await expect(service.signin(dto)).rejects.toThrow(UnauthorizedException);
+    });
+  });
+
+  describe('refreshTokens', () => {
+    // TODO ADV Testing: 1.2 Happy Path
+    it('should return tokens when everything is valid', async () => {
+      mockUsersService.findById.mockResolvedValue({
+        id: 1,
+        email: 'test@test.com',
+        hashedRefreshToken: 'hashed-rt',
+      });
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      const result = await service.refreshTokens(1, 'valid-rt');
+
+      expect(result).toHaveProperty('access_token');
+      expect(result).toHaveProperty('refresh_token');
+    });
+
+    // TODO ADV Testing: 1.3 Hash Mismatch
+    it('should throw ForbiddenException if refresh token does not match', async () => {
+      mockUsersService.findById.mockResolvedValue({
+        id: 1,
+        email: 'test@test.com',
+        hashedRefreshToken: 'hashed-rt',
+      });
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+      await expect(service.refreshTokens(1, 'wrong-rt')).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 });
