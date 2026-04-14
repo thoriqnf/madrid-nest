@@ -1,5 +1,0 @@
-node_modules
-.git
-.env
-# Do NOT ignore dist here, because we want it to be preserved if created during build
-# dist
