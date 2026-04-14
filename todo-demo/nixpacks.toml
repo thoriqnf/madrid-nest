@@ -5,7 +5,7 @@ nixPkgs = ["...", "nodejs_22"]
 cmds = ["npm ci"]
 
 [phases.build]
-cmds = ["npx prisma generate"]
+cmds = ["npm run build"]
 
 [start]
-cmd = "npx nest build && npx prisma migrate deploy && npm run start:prod"
+cmd = "npx prisma migrate deploy && node dist/main"
