@@ -1,0 +1,6 @@
+[build]
+installCommand = "npm install"
+buildCommand = "npm run build"
+
+[deploy]
+startCommand = "npx prisma migrate deploy && npm run start:prod"
