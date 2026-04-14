@@ -70,20 +70,14 @@ describe('TodosService', () => {
 
     // TODO ADV Testing: 7.1 Ownership Failure (Forbidden)
     it('should throw ForbiddenException if todo does not belong to the user', async () => {
-      mockRepository.findUnique.mockResolvedValueOnce({ ...mockTodo, userId: 2 });
-      await expect(service.findOne(1, 1)).rejects.toThrow(ForbiddenException);
+      // Logic goes here
     });
   });
 
   describe('update', () => {
     // TODO ADV Testing: 7.2 Security Propagation
     it('should throw ForbiddenException when updating a todo that belongs to another user', async () => {
-      mockRepository.findUnique.mockResolvedValueOnce({ ...mockTodo, userId: 2 });
-      const updateData = { title: 'Illegal Update' };
-
-      await expect(service.update(1, 1, updateData)).rejects.toThrow(
-        ForbiddenException,
-      );
+      // Logic goes here
     });
   });
 });

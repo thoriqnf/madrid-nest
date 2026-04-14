@@ -61,12 +61,6 @@ describe('TodosRepository', () => {
 
   // TODO ADV Testing: 8.1 Simulating Prisma Errors
   it('should throw error when prisma delete fails for non-existent record', async () => {
-    const error = new Prisma.PrismaClientKnownRequestError('Record not found', {
-      code: 'P2025',
-      clientVersion: '7.7.0',
-    });
-    mockPrismaService.todo.delete.mockRejectedValueOnce(error);
-
-    await expect(repository.delete({ id: 999 })).rejects.toThrow();
+    // Logic goes here
   });
 });

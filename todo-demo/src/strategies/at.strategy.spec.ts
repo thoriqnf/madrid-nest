@@ -21,7 +21,6 @@ describe('AtStrategy', () => {
 
   // TODO ADV Testing: 6.1 Payload Validation
   it('should return the payload when validated', () => {
-    const payload = { sub: 1, email: 'test@test.com' };
-    expect(strategy.validate(payload)).toEqual(payload);
+    // Logic goes here
   });
 });

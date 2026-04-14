@@ -89,45 +89,19 @@ describe('AuthService', () => {
 
     // TODO ADV Testing: 1.1 Password Mismatch
     it('should throw UnauthorizedException if password does not match', async () => {
-      mockUsersService.findByEmail.mockResolvedValue({
-        id: 1,
-        password: 'hashed-password',
-      });
-      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
-
-      const dto = { email: 'test@test.com', password: 'wrong-password' };
-      await expect(service.signin(dto)).rejects.toThrow(UnauthorizedException);
+      // Logic goes here
     });
   });
 
   describe('refreshTokens', () => {
     // TODO ADV Testing: 1.2 Happy Path
     it('should return tokens when everything is valid', async () => {
-      mockUsersService.findById.mockResolvedValue({
-        id: 1,
-        email: 'test@test.com',
-        hashedRefreshToken: 'hashed-rt',
-      });
-      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-
-      const result = await service.refreshTokens(1, 'valid-rt');
-
-      expect(result).toHaveProperty('access_token');
-      expect(result).toHaveProperty('refresh_token');
+      // Logic goes here
     });
 
     // TODO ADV Testing: 1.3 Hash Mismatch
     it('should throw ForbiddenException if refresh token does not match', async () => {
-      mockUsersService.findById.mockResolvedValue({
-        id: 1,
-        email: 'test@test.com',
-        hashedRefreshToken: 'hashed-rt',
-      });
-      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
-
-      await expect(service.refreshTokens(1, 'wrong-rt')).rejects.toThrow(
-        ForbiddenException,
-      );
+      // Logic goes here
     });
   });
 });

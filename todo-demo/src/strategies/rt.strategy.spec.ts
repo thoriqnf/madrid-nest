@@ -22,16 +22,6 @@ describe('RtStrategy', () => {
 
   // TODO ADV Testing: 6.2 Refresh Token Extraction
   it('should extract the refresh token and attach it to the payload', () => {
-    const payload = { sub: 1, email: 'test@test.com' };
-    const mockRequest = {
-      get: jest.fn().mockReturnValue('Bearer rt-token'),
-    } as unknown as Request;
-
-    const result = strategy.validate(mockRequest, payload);
-
-    expect(result).toEqual({
-      ...payload,
-      refreshToken: 'rt-token',
-    });
+    // Logic goes here
   });
 });

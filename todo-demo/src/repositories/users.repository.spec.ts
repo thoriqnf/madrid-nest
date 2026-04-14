@@ -59,18 +59,11 @@ describe('UsersRepository', () => {
 
   // TODO ADV Testing: 4.1 Update Logic
   it('should update a user', async () => {
-    const params = {
-      where: { id: 1 },
-      data: { name: 'New Name' },
-    };
-    await repository.update(params);
-    expect(prisma.user.update).toHaveBeenCalledWith(params);
+    // Logic goes here
   });
 
   // TODO ADV Testing: 4.2 Delete Logic
   it('should delete a user', async () => {
-    const where = { id: 1 };
-    await repository.delete(where);
-    expect(prisma.user.delete).toHaveBeenCalledWith({ where });
+    // Logic goes here
   });
 });
