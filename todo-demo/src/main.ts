@@ -1,7 +1,8 @@
-console.log('🏁 NODE PROCESS STARTING...');
-console.log('PID:', process.pid);
-console.log('Version:', process.version);
-console.log('Argv:', process.argv);
+console.error('🏁 [DEBUG] NODE PROCESS STARTING...');
+console.error('PID:', process.pid);
+console.error('Version:', process.version);
+console.error('Raw PORT:', process.env.PORT);
+console.error('DATABASE_URL starts with:', process.env.DATABASE_URL?.substring(0, 20));
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
