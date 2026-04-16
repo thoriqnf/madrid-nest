@@ -1,6 +1,9 @@
 # Base image
 FROM node:22-alpine AS builder
 
+# Install build dependencies
+RUN apk add --no-cache python3 make g++
+
 # Create app directory
 WORKDIR /app
 
