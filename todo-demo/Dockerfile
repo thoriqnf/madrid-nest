@@ -11,8 +11,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies
-RUN npm install
+# Install dependencies (use ci for reliable builds)
+RUN npm ci
 
 # Copy source code
 COPY . .
@@ -26,6 +26,9 @@ FROM node:22-alpine
 
 WORKDIR /app
 
+# Install openssl for Prisma (needed on Alpine)
+RUN apk add --no-cache openssl
+
 # Copy only necessary files from builder
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
@@ -35,8 +38,8 @@ COPY --from=builder /app/prisma ./prisma
 # Set environment variables
 ENV NODE_ENV=production
 
-# Expose port (as seen in .env.example)
+# Expose port
 EXPOSE 8000
 
 # Default command
-CMD ["node", "dist/main"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
