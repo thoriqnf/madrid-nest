@@ -1,3 +1,8 @@
+console.log('🏁 NODE PROCESS STARTING...');
+console.log('PID:', process.pid);
+console.log('Version:', process.version);
+console.log('Argv:', process.argv);
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
@@ -19,20 +24,30 @@ async function bootstrap() {
   console.log('📌 PORT env:', process.env.PORT);
   console.log('📌 DATABASE_URL exists:', !!process.env.DATABASE_URL);
   console.log('📌 JWT_SECRET exists:', !!process.env.JWT_SECRET);
-  console.log('📌 Process PID:', process.pid);
-  console.log('📌 Node version:', process.version);
+  console.log('📌 RT_SECRET exists:', !!process.env.RT_SECRET);
   console.log('====================================');
 
   try {
     console.log('⏳ Creating NestFactory...');
-    const app = await NestFactory.create(AppModule, { logger: ['log', 'error', 'warn', 'debug', 'verbose'] });
+    const app = await NestFactory.create(AppModule, { 
+      logger: ['log', 'error', 'warn', 'debug', 'verbose'],
+      bufferLogs: true 
+    });
     console.log('✅ NestFactory created');
 
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     console.log('✅ ValidationPipe registered');
 
-    const port = Number(process.env.PORT) || 8000;
+    // Ensure port is handled correctly, default to 8000 for local, 
+    // but Railway MUST provide a PORT if it expects one.
+    const rawPort = process.env.PORT;
+    const port = rawPort ? Number(rawPort) : 8000;
     const host = '0.0.0.0';
+
+    if (isNaN(port)) {
+      console.error(`🔴 INVALID PORT DETECTED: "${rawPort}"`);
+      process.exit(1);
+    }
 
     console.log(`⏳ Attempting to listen on ${host}:${port}...`);
     await app.listen(port, host);
@@ -41,11 +56,10 @@ async function bootstrap() {
     console.log('====================================');
     console.log(`✅ Application listening on: ${url}`);
     console.log(`✅ Health check: ${url}/`);
-    console.log(`✅ Auth signup: ${url}/auth/signup`);
-    console.log(`✅ Todos: ${url}/todos`);
     console.log('====================================');
   } catch (error) {
     console.error('🔴 BOOTSTRAP FAILED:', error);
+    console.error(error.stack);
     process.exit(1);
   }
 }

@@ -45,4 +45,4 @@ ENV NODE_ENV=production
 EXPOSE 8000
 
 # Default command
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
+CMD ["sh", "-c", "npx prisma migrate deploy && exec node dist/main"]
