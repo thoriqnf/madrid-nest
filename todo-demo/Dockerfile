@@ -10,6 +10,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 COPY prisma ./prisma/
+# Copy prisma config for generation
+COPY prisma.config.ts ./
 
 # Install dependencies (use ci for reliable builds)
 RUN npm ci
@@ -34,6 +36,7 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts ./
 
 # Set environment variables
 ENV NODE_ENV=production
