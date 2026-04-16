@@ -7,7 +7,6 @@ npm-debug.log
 docker-compose.yml
 Dockerfile
 .dockerignore
-package-lock.json
 bun.lock
 README.md
 docs
